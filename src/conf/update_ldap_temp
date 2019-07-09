@@ -1,0 +1,52 @@
+#!/bin/bash
+
+CNAME="#CNAME"
+BASEDN="#BASEDN"
+BASECN="#BASECN"
+ORGANIZATION="#ORGANIZATION"
+
+ADMINCN="#ADMINCN"
+ADMINPASSWD="#ADMINPASSWD"
+CNCONFIGADMINDN="#CNCONFIGADMINDN"
+CNCONFIGADMINPASSWD="#CNCONFIGADMINPASSWD"
+LIDERAHENK_SCHEMA_PATH="/tmp/liderahenk.ldif"
+
+LIDERCONSOLEUSER="#LIDERCONSOLEUSER"
+LIDERCONSOLEPWD="#LIDERCONSOLEPWD"
+LIDER_SERVER_ADDR="#LIDER_SERVER_ADDR"
+ADMINDN="$ADMINCN,$BASEDN"
+
+# add liderahenk.ldif file to ldap
+ldapadd -x -D "$CNCONFIGADMINDN" -f $LIDERAHENK_SCHEMA_PATH -w $CNCONFIGADMINPASSWD
+
+ldapadd -x -D "$ADMINDN" -w $ADMINPASSWD << EOL
+dn: cn=liderAhenkConfig,$BASEDN
+changetype: add
+objectClass: pardusLiderAhenkConfig
+liderServiceAddress: http://$LIDER_SERVER_ADDR:8181
+cn: liderAhenkConfig
+
+dn: cn=$LIDERCONSOLEUSER,$BASEDN
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: pardusAccount
+objectClass: pardusLider
+objectClass: person
+objectClass: top
+cn: $LIDERCONSOLEUSER
+sn: $LIDERCONSOLEUSER
+uid: $LIDERCONSOLEUSER
+userPassword: $LIDERCONSOLEPWD
+liderPrivilege: [REPORT:ALL]
+liderPrivilege: [TASK:$BASEDN:ALL]
+description: user of lider console
+
+dn: ou=Ahenkler,$BASEDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Ahenkler
+description: pardusDeviceGroup
+EOL
+
+systemctl restart slapd.service

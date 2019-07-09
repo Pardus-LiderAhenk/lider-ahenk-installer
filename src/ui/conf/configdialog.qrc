@@ -1,0 +1,15 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+   <file>images/ldap.png</file>
+   <file>images/liderahenk-32.png</file>
+   <file>images/ejabberd.png</file>
+   <file>images/database.png</file>
+   <file>images/liderahenk.png</file>
+   <file>images/log.png</file>
+   <file>images/ahenk.png</file>
+   <file>images/liderahenk-wiev.png</file>
+   <file>images/vagrant.png</file>
+   <file>images/settings.png</file>
+   <file>images/lider_console.png</file>
+</qresource>
+</RCC>

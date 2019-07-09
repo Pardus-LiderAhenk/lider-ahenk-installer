@@ -1,0 +1,15 @@
+# AUTO-GENERATED FILE - DO NOT EDIT!! Use ldapmodify.
+# CRC32 72db62ca
+dn: cn=liderahenk,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: liderahenk
+olcAttributeTypes: {0}( 2.4.2.42.1.9.7.9.0.9.7.2 NAME 'liderServiceAddress' SUP description SINGLE-VALUE )
+olcAttributeTypes: {1}( 2.4.2.42.1.9.7.9.0.9.7.1 NAME 'liderPrivilege' SUP description )
+olcAttributeTypes: {2}( 2.4.2.42.1.9.7.9.0.9.7.3 NAME 'liderDeviceObjectClassName' SUP objectClass SINGLE-VALUE )
+olcAttributeTypes: {3}( 2.4.2.42.1.9.7.9.0.9.7.4 NAME 'liderUserObjectClassName' SUP objectClass SINGLE-VALUE )
+olcAttributeTypes: {4}( 2.4.2.42.1.9.7.9.0.9.7.5 NAME 'liderUserIdentityAttributeName' SUP description SINGLE-VALUE )
+olcAttributeTypes: {5}( 2.4.2.42.1.9.7.9.0.9.7.6 NAME 'liderAhenkOwnerAttributeName' SUP description SINGLE-VALUE )
+olcObjectClasses: {0}( 2.4.2.42.1.9.7.8.1.1.6.1 NAME 'pardusLiderAhenkConfig' STRUCTURAL MUST ( liderServiceAddress $ cn ) MAY ( liderAhenkOwnerAttributeName $ liderDeviceObjectClassName $ liderUserIdentityAttributeName $ liderUserObjectClassName ) )
+olcObjectClasses: {1}( 2.4.2.42.1.9.7.8.1.1.6.4 NAME 'pardusAccount' AUXILIARY MUST ( uid $ userPassword ) )
+olcObjectClasses: {2}( 2.4.2.42.1.9.7.8.1.1.6.3 NAME 'pardusDevice' AUXILIARY MUST ( cn $ uid $ userPassword $ owner ) )
+olcObjectClasses: {3}( 2.4.2.42.1.9.7.8.1.1.6.2 NAME 'pardusLider' AUXILIARY MAY liderPrivilege )

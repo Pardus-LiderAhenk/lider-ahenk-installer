@@ -1,0 +1,229 @@
+#!/bin/bash
+
+CNAME="#CNAME"
+BASEDN="#BASEDN"
+BASECN="#BASECN"
+ORGANIZATION="#ORGANIZATION"
+
+ADMINCN="#ADMINCN"
+ADMINPASSWD="#ADMINPASSWD"
+CNCONFIGADMINDN="#CNCONFIGADMINDN"
+CNCONFIGADMINPASSWD="#CNCONFIGADMINPASSWD"
+LIDERAHENK_SCHEMA_PATH="/tmp/liderahenk.ldif"
+SUDO_SCHEMA_PATH="/tmp/sudo.ldif"
+
+LIDERCONSOLEUSER="#LIDERCONSOLEUSER"
+LIDERCONSOLEPWD="#LIDERCONSOLEPWD"
+ADMINDN="$ADMINCN,$BASEDN"
+ADMINGROUPDN="cn=adminGroups,ou=Guruplar,$BASEDN"
+LIDER_SERVER_ADDR="#LIDER_SERVER_ADDR"
+DEFAULTPOLICYDN="cn=Default,ou=Policies,$BASEDN"
+SIMPLELDAPUSER="#SIMPLE_LDAP_USER"
+SIMPLELDAPUSERPWD="#SIMPLE_LDAP_USER_PWD"
+#ADMINPASSWDHASH=$(slappasswd -h {SSHA} -s $ADMINPASSWD)
+
+DBPATH=/var/ldaps/$CNAME
+
+LASTDBCOUNT=`ldapsearch -LLL -x -s sub -D "$CNCONFIGADMINDN" -w $CNCONFIGADMINPASSWD -b "cn=config" "(olcDatabase=*)" | egrep -o "dn: olcDatabase={([0-9]+)}mdb" | tac | egrep -o -m1 "[0-9]+"`
+CURDBNO=`expr $LASTDBCOUNT + 1`
+
+systemctl restart slapd.service
+
+# password for cn=admin,cn=config
+NEW_PASSWD=$(slappasswd -h {SSHA} -s $CNCONFIGADMINPASSWD)
+echo $NEW_PASSWD
+
+if [ -d "$DBPATH" ]; then
+    echo "ERROR: Directory $DBPATH already exists!" 1>&2
+    exit 0
+fi
+
+mkdir -p $DBPATH
+chmod 755 $DBPATH
+chown openldap:openldap $DBPATH
+
+# Set password for cn=admin,cn=config
+ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
+dn: olcDatabase={0}config,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: $NEW_PASSWD
+
+dn: cn=config
+replace: olcAuthzRegexp
+olcAuthzRegexp: {0}uid=([^,]*),cn=[^,]*,cn=auth  ldap:///$BASEDN??sub?(uid=\$1)
+-
+replace: olcSizeLimit
+olcSizeLimit: 10000
+EOL
+
+# Policy modulu icin gerekli schemayi yukler
+ldapadd -x -D "$CNCONFIGADMINDN" -f /etc/ldap/schema/ppolicy.ldif -w $CNCONFIGADMINPASSWD
+
+# Varsayilan gerekli modulleri ayarlar
+ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
+dn: cn=module{0},cn=config
+changetype: modify
+add: olcModuleLoad
+olcModuleLoad: unique
+olcModuleLoad: ppolicy
+olcModuleLoad: memberof
+EOL
+
+#uid parametresini unique yapar. (unique modulu yuklu olmalidir.)
+ldapadd -Y EXTERNAL -H ldapi:/// << EOL
+dn: olcOverlay=unique,olcDatabase={$CURDBNO}mdb,cn=config
+changetype: add
+objectClass: olcUniqueConfig
+objectClass: top
+objectClass: olcConfig
+objectClass: olcOverlayConfig
+olcOverlay: unique
+olcUniqueAttribute: uid
+
+#memberof modulunu aktive eder, boylece bir groupOfNames e her member eklendiginde eklenen member'in memberof parametresi de otomatik ayarlanir.
+dn: olcOverlay=memberof,olcDatabase={$CURDBNO}mdb,cn=config
+objectClass: olcMemberOf
+objectClass: top
+objectClass: olcConfig
+objectClass: olcOverlayConfig
+olcOverlay: memberof
+
+# ppolicy modulunu aktive edilir.
+dn: olcOverlay={0}ppolicy,olcDatabase={1}mdb,cn=config
+objectClass: olcOverlayConfig
+objectClass: olcPPolicyConfig
+olcOverlay: {0}ppolicy
+olcPPolicyDefault: $DEFAULTPOLICYDN
+olcPPolicyHashCleartext: FALSE
+olcPPolicyUseLockout: FALSE
+olcPPolicyForwardUpdates: FALSE
+EOL
+
+# add liderahenk.ldif file to ldap
+ldapadd -x -D "$CNCONFIGADMINDN" -f $LIDERAHENK_SCHEMA_PATH -w $CNCONFIGADMINPASSWD
+
+ldapadd -x -D "$CNCONFIGADMINDN" -f $SUDO_SCHEMA_PATH -w $CNCONFIGADMINPASSWD
+
+ldapadd -x -D "$ADMINDN" -w $ADMINPASSWD << EOL
+dn: cn=liderAhenkConfig,$BASEDN
+changetype: add
+objectClass: pardusLiderAhenkConfig
+liderServiceAddress: http://$LIDER_SERVER_ADDR:8181
+cn: liderAhenkConfig
+
+dn: cn=$LIDERCONSOLEUSER,$BASEDN
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: pardusAccount
+objectClass: pardusLider
+objectClass: person
+objectClass: top
+cn: $LIDERCONSOLEUSER
+sn: $LIDERCONSOLEUSER
+uid: $LIDERCONSOLEUSER
+userPassword: $LIDERCONSOLEPWD
+liderPrivilege: [REPORT:ALL]
+liderPrivilege: [TASK:$BASEDN:ALL]
+
+dn: ou=Ahenkler,$BASEDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Ahenkler
+description: pardusDeviceGroup
+
+dn: ou=Guruplar,$BASEDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Guruplar
+
+dn: ou=Kullanıcılar,$BASEDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Kullanıcılar
+
+
+dn: uid=$SIMPLELDAPUSER,ou=Kullanıcılar,$BASEDN
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: pardusAccount
+objectClass: pardusLider
+objectClass: person
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: top
+cn: $SIMPLELDAPUSER
+sn: $SIMPLELDAPUSER
+uid: $SIMPLELDAPUSER
+uidNumber: 5000
+gidNumber: 5000
+homeDirectory: /home/$SIMPLELDAPUSER
+userPassword: $SIMPLELDAPUSERPWD
+loginShell: /bin/bash
+description: örnek ldap kullanıcısı
+
+dn: cn=adminGroups,ou=Guruplar,$BASEDN
+objectClass: groupOfNames
+objectClass: top
+member: $ADMINDN
+member: cn=$LIDERCONSOLEUSER,$BASEDN
+cn: adminGroups
+description: LDAP üzerinde yazma yetkisi olan kullanıcı grubu
+
+dn: ou=Roles,$BASEDN
+objectClass: organizationalUnit
+objectClass: top
+objectClass: pardusLider
+ou: Roles
+description: Roles groups
+
+dn: cn=rol-1,ou=Roles,$BASEDN
+objectClass: sudoRole
+objectClass: top
+cn: rol-1
+sudoUser: test_ldap_user
+sudoHost: ALL
+sudoCommand: ALL
+
+dn: ou=Politikalar,$BASEDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Policies
+description: politikalar grubu
+
+dn: cn=Parola Politikası,ou=Politikalar,$BASEDN
+objectClass: person
+objectClass: pwdPolicy
+objectClass: top
+cn: Parola Politikası
+pwdAttribute: userPassword
+sn: Parola Politikası
+description: varsayılan parola politikası
+pwdAllowUserChange: TRUE
+pwdCheckQuality: 0
+pwdExpireWarning: 0
+pwdFailureCountInterval: 0
+pwdGraceAuthNLimit: 2
+pwdInHistory: 3
+pwdLockout: TRUE
+pwdLockoutDuration: 300
+pwdMaxAge: 30000
+pwdMaxFailure: 3
+pwdMinAge: 0
+pwdMinLength: 4
+pwdMustChange: TRUE
+pwdSafeModify: FALSE
+EOL
+
+# User group with ldap write permission
+ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcAccess
+olcAccess: {1}to dn.subtree="$BASEDN" by group.exact="$ADMINGROUPDN" write by * read
+EOL
+systemctl restart slapd.service
