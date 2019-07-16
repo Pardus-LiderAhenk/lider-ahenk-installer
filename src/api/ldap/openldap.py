@@ -38,9 +38,7 @@ class OpenLdapInstaller(object):
             "#CNCONFIGADMINPASSWD": data["l_config_pwd"],
             "#LIDERCONSOLEUSER": data["ladmin_user"],
             "#LIDERCONSOLEPWD": data["ladmin_pwd"],
-            "#LIDER_SERVER_ADDR": data["lider_server_addr"],
-            "#SIMPLE_LDAP_USER": data["simple_ldap_user"],
-            "#SIMPLE_LDAP_USER_PWD": data["simple_ldap_user_pwd"]
+            "#LIDER_SERVER_ADDR": data["lider_server_addr"]
         }
 
         # copy liderahenk.ldif file to ldap server
