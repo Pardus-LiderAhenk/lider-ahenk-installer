@@ -171,8 +171,6 @@ class OpenLdapPage(QWidget):
 
             subprocess.Popen(["xterm", "-e", "tail", "-f",
                               self.log_path])
-            # subprocess.Popen(["xterm", "-e", "tail", "-f",
-            #                               "/home/tcolak/dev/lider-ahenk/lider-ahenk-installer/src/dist/installer.log"])
 
 
             if self.data['location'] == 'remote':

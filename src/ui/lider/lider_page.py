@@ -118,6 +118,10 @@ class LiderPage(QWidget):
             self.ldap_layout.ldap_admin_pwd.setText(data["l_admin_pwd"])
             self.ldap_layout.ladmin_user.setText(data["ladmin_user"])
             self.ldap_layout.ladmin_pwd.setText(data["l_admin_pwd"])
+            if data["ldap_status"] == "new":
+                self.ldap_layout.ldapStatusCombo.setCurrentIndex(0)
+            else:
+                self.ldap_layout.ldapStatusCombo.setCurrentIndex(1)
 
     def check_control_button(self, idx):
         ## if select location is remote server

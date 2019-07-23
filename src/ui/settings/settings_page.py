@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushBut
 from install_manager import InstallManager
 from ui.lider.lider_page import LiderPage
 from ui.message_box.message_box import MessageBox
+from api.util.util import Util
 
 class SettingsPage(QWidget):
     def __init__(self, parent=None):
@@ -23,6 +24,8 @@ class SettingsPage(QWidget):
         self.im = InstallManager()
         self.msg_box = MessageBox()
         self.lider_page = LiderPage()
+
+        self.util = Util()
 
         #server selection parameters
         self.standartSelectionBox = QCheckBox("Standart")
@@ -147,6 +150,8 @@ class SettingsPage(QWidget):
         self.addButton.clicked.connect(self.add_server)
 
         self.checkControlButton.clicked.connect(self.ssh_control)
+
+        self.get_server_settings()
 
     def main_repo(self):
 
@@ -363,3 +368,60 @@ class SettingsPage(QWidget):
             else:
                 msg = "Bağlantı Sağlanamadı. Bağlantı Ayarlarını Kontrol Ederek Daha Sonra Tekrar Deneyiniz!\n"
                 self.msg_box.information(msg)
+
+
+    def get_server_settings(self):
+
+        if self.util.is_exist(self.server_list_path):
+            with open(self.server_list_path) as f:
+                data = json.load(f)
+                if data["repo_addr"] == "deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main":
+                    self.repoMainBox.setChecked(True)
+                else:
+                    self.repoTestBox.setChecked(True)
+
+                if data["selection"] == "standart":
+                    self.standartSelectionBox.setChecked(True)
+                    self.server_ip.setText(data["ip"])
+                    self.username.setText(data["username"])
+                    self.password.setText(data["password"])
+                else:
+                    self.advancedSelectionBox.setChecked(True)
+
+                    servers = "Veritabanı", "OpenLDAP", "XMPP", "Lider"
+                    for i in servers:
+                        rowPosition = self.tableWidget.rowCount()
+                        self.tableWidget.insertRow(rowPosition)
+                        numcols = self.tableWidget.columnCount()
+                        numrows = self.tableWidget.rowCount()
+                        self.tableWidget.setRowCount(numrows)
+                        self.tableWidget.setAlternatingRowColors(True)
+                        self.tableWidget.setColumnCount(numcols)
+                        self.tableWidget.setItem(numrows - 1, 0, QTableWidgetItem(i))
+                        self.tableWidget.setItem(numrows - 1, 1, QTableWidgetItem(data[i][0]["ip"]))
+                        self.tableWidget.setItem(numrows - 1, 2, QTableWidgetItem(data[i][0]["username"]))
+                        self.tableWidget.setItem(numrows - 1, 3, QTableWidgetItem(data[i][0]["password"]))
+
+                        self.delButton = QPushButton(self.tableWidget)
+                        self.delButton.setText('Sil')
+                        self.delButton.clicked.connect(self.del_server)
+                        self.tableWidget.setCellWidget(numrows - 1, 4, self.delButton)
+                        self.tableWidget.selectRow(numrows - 1)
+
+                        if self.tableWidget.rowCount() == 4:
+                            self.saveButton.setEnabled(True)
+                        else:
+                            self.saveButton.setDisabled(True)
+
+
+
+
+
+
+
+
+
+
+
+
+
