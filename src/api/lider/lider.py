@@ -141,7 +141,7 @@ class LiderInstaller(object):
         db_text = self.f_db.read()
         txt = self.config_manager.replace_all(db_text, db_data)
         self.f_db_out = open(self.db_conf_out_path, 'w+')
-        self.f_db_out.write(txt)
+        self.f_db_out.write(str(txt))
         self.f_db.close()
         self.f_db_out.close()
         self.logger.info("tr.org.datasource.cfg dosyası oluşturuldu")

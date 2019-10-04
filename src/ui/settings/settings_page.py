@@ -26,6 +26,7 @@ class SettingsPage(QWidget):
         self.lider_page = LiderPage()
 
         self.util = Util()
+        self.repo_type = None
 
         #server selection parameters
         self.standartSelectionBox = QCheckBox("Standart")
@@ -148,22 +149,44 @@ class SettingsPage(QWidget):
 
         self.saveButton.clicked.connect(self.save_settings)
         self.addButton.clicked.connect(self.add_server)
-
         self.checkControlButton.clicked.connect(self.ssh_control)
-
         self.get_server_settings()
 
     def main_repo(self):
 
         if self.repoMainBox.isChecked() is True:
-            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
+            self.repo_type = "main"
             self.repoTestBox.setChecked(False)
+
+            if self.util.is_exist(self.server_list_path):
+                with open(self.server_list_path) as f:
+                    data = json.load(f)
+                    self.repo_key.setText(data["repo_key"])
+                    if data["repo_type"] == "main":
+                        self.repoMainBox.setChecked(True)
+                        self.repo_addr.setText(data["repo_addr"])
+                    else:
+                        self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
+            else:
+                self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
 
     def test_repo(self):
 
         if self.repoTestBox.isChecked() is True:
-            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk-test testing main")
+            self.repo_type = "test"
             self.repoMainBox.setChecked(False)
+
+            if self.util.is_exist(self.server_list_path):
+                with open(self.server_list_path) as f:
+                    data = json.load(f)
+                    self.repo_key.setText(data["repo_key"])
+                    if data["repo_type"] == "test":
+                        self.repoTestBox.setChecked(True)
+                        self.repo_addr.setText(data["repo_addr"])
+                    else:
+                        self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk-test testing main")
+            else:
+                self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk-test testing main")
 
     def standart_selection(self):
 
@@ -271,10 +294,10 @@ class SettingsPage(QWidget):
         if self.advancedSelectionBox.isChecked() is True:
             if self.tableWidget.rowCount() == 4:
                 self.server_list = {}
-
                 self.repo_data = {
                     'repo_key': repo_key,
-                    'repo_addr': repo_addr
+                    'repo_addr': repo_addr,
+                    'repo_type': self.repo_type
                 }
                 ## get item from server list table
                 row_count = self.tableWidget.rowCount()
@@ -329,7 +352,8 @@ class SettingsPage(QWidget):
                 'password': password,
                 'server_name': "all",
                 'repo_key': repo_key,
-                'repo_addr': repo_addr
+                'repo_addr': repo_addr,
+                'repo_type': self.repo_type
             }
 
             if ip is "" or username is "" or password is "":
@@ -375,10 +399,15 @@ class SettingsPage(QWidget):
         if self.util.is_exist(self.server_list_path):
             with open(self.server_list_path) as f:
                 data = json.load(f)
-                if data["repo_addr"] == "deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main":
+                self.repo_key.setText(data["repo_key"])
+                if data["repo_type"] == "main":
                     self.repoMainBox.setChecked(True)
+                    self.repoTestBox.setChecked(False)
+                    self.repo_addr.setText(data["repo_addr"])
                 else:
                     self.repoTestBox.setChecked(True)
+                    self.repoMainBox.setChecked(False)
+                    self.repo_addr.setText(data["repo_addr"])
 
                 if data["selection"] == "standart":
                     self.standartSelectionBox.setChecked(True)
@@ -412,16 +441,3 @@ class SettingsPage(QWidget):
                             self.saveButton.setEnabled(True)
                         else:
                             self.saveButton.setDisabled(True)
-
-
-
-
-
-
-
-
-
-
-
-
-
