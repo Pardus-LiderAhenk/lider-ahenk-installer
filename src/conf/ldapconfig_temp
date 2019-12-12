@@ -133,11 +133,11 @@ objectClass: top
 ou: Ahenkler
 description: pardusDeviceGroup
 
-dn: ou=Guruplar,$BASEDN
+dn: ou=Gruplar,$BASEDN
 objectClass: organizationalUnit
 objectClass: pardusLider
 objectClass: top
-ou: Guruplar
+ou: Gruplar
 
 dn: ou=Kullanıcılar,$BASEDN
 objectClass: organizationalUnit
@@ -165,7 +165,7 @@ userPassword: $SIMPLELDAPUSERPWD
 loginShell: /bin/bash
 description: örnek ldap kullanıcısı
 
-dn: cn=adminGroups,ou=Guruplar,$BASEDN
+dn: cn=adminGroups,ou=Gruplar,$BASEDN
 objectClass: groupOfNames
 objectClass: top
 member: $ADMINDN
