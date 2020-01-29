@@ -149,7 +149,6 @@ class AhenkPage(QWidget):
         password = self.password.text()
         ip_status = self.check_ip(ip)
         if ip_status is False:
-
             if ip is "" or username is "" or password is "":
                 self.msg_box.warning("Lütfen istemci adresini, kullanıcı adını ve kullanıcı parolası giriniz!")
             else:
@@ -165,7 +164,7 @@ class AhenkPage(QWidget):
                 self.tableWidget.setColumnCount(numcols)
                 self.tableWidget.setItem(numrows - 1, 0, QTableWidgetItem(ip))
                 self.tableWidget.setItem(numrows - 1, 1, QTableWidgetItem(username))
-                self.tableWidget.setItem(numrows - 1, 2, QTableWidgetItem(password))
+                self.tableWidget.setItem(numrows - 1, 2, QTableWidgetItem("*" * len(password)))
                 self.delButton = QPushButton(self.tableWidget)
                 self.delButton.setText('Sil')
                 self.delButton.clicked.connect(self.del_ahenk)
@@ -206,7 +205,6 @@ class AhenkPage(QWidget):
         ## get item from ahenk list table
         row_count = self.tableWidget.rowCount()
         if row_count != 0:
-
             self.status.install_status.setText("Ahenk kurulumu devam ediyor...")
             self.status.install_status.setStyleSheet("background-color: green")
             self.msg_box.information("Bağlantı Başarılı. Kuruluma Devam Edebilirsiniz.")
@@ -215,7 +213,6 @@ class AhenkPage(QWidget):
                               self.log_path])
 
             for row in range(row_count):
-
                 ip_item = self.tableWidget.item(row, 0)
                 ip = ip_item.text()
 

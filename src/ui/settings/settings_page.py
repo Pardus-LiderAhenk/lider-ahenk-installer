@@ -240,7 +240,7 @@ class SettingsPage(QWidget):
                     self.tableWidget.setItem(numrows - 1, 0, QTableWidgetItem(server_name))
                     self.tableWidget.setItem(numrows - 1, 1, QTableWidgetItem(ip))
                     self.tableWidget.setItem(numrows - 1, 2, QTableWidgetItem(username))
-                    self.tableWidget.setItem(numrows - 1, 3, QTableWidgetItem(password))
+                    self.tableWidget.setItem(numrows - 1, 3, QTableWidgetItem("*" * len(password)))
 
                     self.delButton = QPushButton(self.tableWidget)
                     self.delButton.setText('Sil')
