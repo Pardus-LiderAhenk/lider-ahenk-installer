@@ -16,6 +16,17 @@ LIDERCONSOLEPWD="#LIDERCONSOLEPWD"
 LIDER_SERVER_ADDR="#LIDER_SERVER_ADDR"
 ADMINDN="$ADMINCN,$BASEDN"
 
+## Groups on LDAP for LiderAhenk
+GROUPDN="ou=Groups,$BASEDN"
+USERDN="ou=Users,$BASEDN"
+AGENTDN="ou=Agents,$BASEDN"
+ADMINGROUPDN="cn=adminGroups,$GROUPDN"
+AGENTGROUPDN="ou=Agent,$GROUPDN"
+USERGROUPDN="ou=User,$GROUPDN"
+ROLEGROUPDN="ou=Roles,$BASEDN"
+POLICYGROUPDN="ou=Policies,$BASEDN"
+DEFAULTPOLICYDN="cn=Default Password Policy,$POLICYGROUPDN"
+
 # add liderahenk.ldif file to ldap
 ldapadd -x -D "$CNCONFIGADMINDN" -f $LIDERAHENK_SCHEMA_PATH -w $CNCONFIGADMINPASSWD
 
@@ -41,12 +52,27 @@ liderPrivilege: [REPORT:ALL]
 liderPrivilege: [TASK:$BASEDN:ALL]
 description: user of lider console
 
-dn: ou=Ahenkler,$BASEDN
+dn: $AGENTDN
 objectClass: organizationalUnit
 objectClass: pardusLider
 objectClass: top
-ou: Ahenkler
+ou: Agents
 description: pardusDeviceGroup
+
+dn: $ROLEGROUPDN
+objectClass: organizationalUnit
+objectClass: top
+objectClass: pardusLider
+ou: Roles
+description: group of roles
+
+dn: cn=rol-1,$ROLEGROUPDN
+objectClass: sudoRole
+objectClass: top
+cn: rol-1
+sudoUser: test_ldap_user
+sudoHost: ALL
+sudoCommand: ALL
 EOL
 
 systemctl restart slapd.service

@@ -50,7 +50,7 @@ class ConfigDialog(QDialog):
         closeButton = QPushButton("Kapat")
         self.createIcons()
         self.contentsWidget.setCurrentRow(0)
-        closeButton.clicked.connect(self.close)
+        closeButton.clicked.connect(self.close_page)
 
         horizontalLayout = QHBoxLayout()
         horizontalLayout.addWidget(self.contentsWidget)
@@ -69,6 +69,10 @@ class ConfigDialog(QDialog):
         self.setLayout(mainLayout)
         self.setWindowTitle("Lider Ahenk Kurulum Uygulaması")
         self.setWindowIcon(QIcon(":/images/liderahenk-32.png"))
+
+    def close_page(self):
+        # TODO xterm kapatılacak......
+        self.close()
 
     def changePage(self, current, previous):
         if not current:
@@ -134,4 +138,4 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     dialog = ConfigDialog()
-    sys.exit(dialog.exec_())    
+    sys.exit(dialog.exec_())
