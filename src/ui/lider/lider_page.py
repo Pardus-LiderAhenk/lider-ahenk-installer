@@ -306,7 +306,7 @@ class LiderPage(QWidget):
 
             # Lider Configuration
             'lider_username': 'lider_sunucu',
-            'lider_user_pwd': self.lider_sunucu_pwd,
+            'lider_user_pwd': self.ldap_layout.ldap_admin_pwd.text(),
             'l_admin_pwd': self.ldap_layout.ldap_admin_pwd.text(),
             'repo_key': server_data["repo_key"],
             'repo_addr': server_data["repo_addr"]
@@ -365,7 +365,7 @@ class LiderPage(QWidget):
             'e_service_name': "im.liderahenk.org",
             'e_hosts': self.ejabberd_server,
             'lider_username': 'lider_sunucu',
-            'lider_user_pwd': self.lider_sunucu_pwd,
+            'lider_user_pwd': self.ldap_layout.ldap_admin_pwd.text(),
 
             # OpenLDAP Configuration
             'l_base_dn': self.ldap_layout.ldap_base_dn.text(),
