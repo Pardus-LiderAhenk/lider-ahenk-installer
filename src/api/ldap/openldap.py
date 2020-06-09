@@ -4,8 +4,6 @@
 
 import os
 
-from Cython.Distutils.old_build_ext import old_build_ext
-
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 
@@ -21,7 +19,6 @@ class OpenLdapInstaller(object):
         self.sudo_ldif_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/sudo.ldif')
         self.ldap_config_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/ldapconfig')
         self.update_ldap_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/update_ldap')
-        self.olc_database_path = "/etc/ldap/slapd.d/cn=config/olcDatabase={1}mdb.ldif"
 
     def install(self, data):
 
