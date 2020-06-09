@@ -20,9 +20,9 @@ ADMINDN="$ADMINCN,$BASEDN"
 GROUPDN="ou=Groups,$BASEDN"
 USERDN="ou=Users,$BASEDN"
 AGENTDN="ou=Agents,$BASEDN"
-ADMINGROUPDN="cn=adminGroups,$GROUPDN"
 AGENTGROUPDN="ou=Agent,$GROUPDN"
 USERGROUPDN="ou=User,$GROUPDN"
+ADMINGROUPDN="cn=adminGroups,$USERGROUPDN"
 ROLEGROUPDN="ou=Role,$GROUPDN"
 POLICYGROUPDN="ou=Policies,$BASEDN"
 DEFAULTPOLICYDN="cn=Default Password Policy,$POLICYGROUPDN"
@@ -135,6 +135,8 @@ uid: $LIDERCONSOLEUSER
 userPassword: $LIDERCONSOLEPWD
 liderPrivilege: [REPORT:ALL]
 liderPrivilege: [TASK:$BASEDN:ALL]
+liderPrivilege: ROLE_ADMIN
+liderPrivilege: ROLE_USER
 
 dn: $AGENTDN
 objectClass: organizationalUnit
@@ -201,7 +203,7 @@ dn: $ROLEGROUPDN
 objectClass: organizationalUnit
 objectClass: top
 objectClass: pardusLider
-ou: Roles
+ou: Role
 description: group of roles
 
 dn: cn=rol-1,$ROLEGROUPDN
