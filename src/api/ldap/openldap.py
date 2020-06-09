@@ -3,6 +3,9 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import os
+
+from Cython.Distutils.old_build_ext import old_build_ext
+
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 
@@ -18,6 +21,7 @@ class OpenLdapInstaller(object):
         self.sudo_ldif_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/sudo.ldif')
         self.ldap_config_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/ldapconfig')
         self.update_ldap_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/update_ldap')
+        self.olc_database_path = "/etc/ldap/slapd.d/cn=config/olcDatabase={1}mdb.ldif"
 
     def install(self, data):
 
@@ -91,6 +95,7 @@ class OpenLdapInstaller(object):
                     self.logger.info("ldap config betiği çalıştırıldı ve lider ahenk konfigürasyonları tamamlandı")
                 else:
                     self.logger.error("ldap config betiği çalıştırılırken hata oluştu ve lider ahenk konfigürasyonları tamamlanamadı")
+
                 self.logger.info("OpenLDAP kurulumu tamamlandı")
             else:
                  self.logger.error("OpenLDAP sunucusuna bağlantı sağlanamadı için kurulum yapılamadı. Lütfen bağlantı ayarlarını kotrol ediniz!")
