@@ -30,7 +30,7 @@ Komutu ile Lider Ahenk Kurulum Uygulaması indirilir.
 Kurulum uygulamasını çalıştırmak için;
 
 ````
-cd /lider-ahenk-installer/src/
+cd lider-ahenk-installer/src/
 ````
 
 komutu ile src dizinine gidilir ve
