@@ -3,9 +3,15 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import os
+import shutil
+
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 from api.util.util import Util
+import wget
+import tarfile
+from shutil import copyfile
+import subprocess
 
 class LiderInstaller(object):
 
@@ -19,82 +25,118 @@ class LiderInstaller(object):
         self.db_conf_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/tr.org.liderahenk.datasource.cfg')
         self.lider_conf_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/tr.org.liderahenk.cfg')
         self.db_conf_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/tr.org.liderahenk.datasource.cfg')
+        self.tomcat_service_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/tomcat.service')
+        self.application_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/application.properties')
+        self.application_properties_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/application.properties')
+        self.lider_build_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/build.sh')
+        self.lider_tar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2.tar.gz')
+        self.lider_web_url = "http://liderahenk.org/downloads/liderv2.tar.gz"
+        self.lider_war_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2/target/ROOT.war')
+        self.liderv2_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2')
+        self.dist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')
+        self.liderv2_app_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2/src/main/resources/application.properties')
 
     def install(self, data):
-
         repo_key = data["repo_key"]
         repo_key = repo_key.rsplit("/")[-1]
-
-        if self.ssh_status == "Successfully Authenticated" or data['location'] == 'local':
+        if self.ssh_status == "Successfully Authenticated":
             cfg_data = self.config_manager.read()
             self.configure_lider_cfg(data)
             self.configure_db_cfg(data)
+            self.configure_app_properties(data)
+
             result_code = self.ssh_api.run_command(cfg_data["cmd_soft_properties"])
             if result_code == 0:
                 self.logger.info("software-properties-common paketi kuruldu")
             else:
                 self.logger.error("software-properties-common paketi kurulamadı, result_code: " + str(result_code))
-
-            result_code = self.ssh_api.run_command(cfg_data["cmd_liderahenk_repo_key"].format(data["repo_key"], repo_key))
+            result_code = self.ssh_api.run_command(
+                cfg_data["cmd_liderahenk_repo_key"].format(data["repo_key"], repo_key))
             if result_code == 0:
                 self.logger.info("Lider Ahenk repo key dosyası indirildi")
             else:
                 self.logger.error("Lider Ahenk repo key dosyası indirilemedi, result_code: " + str(result_code))
-
             result_code = self.ssh_api.run_command(cfg_data["cmd_liderahenk_repo_add"].format(data["repo_addr"]))
             if result_code == 0:
                 self.logger.info("Lider Ahenk repo adresi eklendi")
             else:
-                self.logger.error("Lider Ahenk repo adresi eklenemedi, result_code: "+str(result_code))
-
+                self.logger.error("Lider Ahenk repo adresi eklenemedi, result_code: " + str(result_code))
             result_code = self.ssh_api.run_command(cfg_data["cmd_update"])
             if result_code == 0:
                 self.logger.info("Paket listesi güncellendi(apt update)")
             else:
-                self.logger.error("Paket listesi güncellenemdi, result_code: "+str(result_code))
+                self.logger.error("Paket listesi güncellenemdi, result_code: " + str(result_code))
 
-            result_code = self.ssh_api.run_command(cfg_data["cmd_lider_install"])
+            result_code = self.ssh_api.run_command("sudo apt-get install openjdk-8-jdk-headless -y")
             if result_code == 0:
-                self.logger.info("lider-server paketi kurulumu yapıldı")
+                self.logger.info("openjdk-8 paketi başarıyla kuruldu")
             else:
-                self.logger.error("lider-server paketi kurulamadı, result_code: "+str(result_code))
-
-            self.ssh_api.scp_file(self.lider_conf_out_path, cfg_data["lider_des_path"])
-            self.ssh_api.scp_file(self.db_conf_out_path, cfg_data["lider_des_path"])
-            self.ssh_api.run_command(cfg_data["cmd_cp_lider_cfg"])
-            self.logger.info("lider konfigürasyon dosyası LİDER sunucusuna kopyalandı")
-            self.ssh_api.run_command(cfg_data["cmd_cp_db_cfg"])
-            self.logger.info("veritabanı konfigürasyon dosyası LİDER sunucusuna kopyalandı")
-            result_code = self.ssh_api.run_command(cfg_data["cmd_lider_service"])
+                self.logger.error("openjdk-8 paketi kurulamadı")
+            result_code = self.ssh_api.run_command("sudo groupadd tomcat")
             if result_code == 0:
-                self.logger.info("lider servisi başlatıldı")
-            else:
-                self.logger.error("lider servisi başlatılamadı, resuşt_code: "+str(result_code))
-
-            result_code = self.ssh_api.run_command(cfg_data["cmd_fs_dep"])
+                self.logger.info("tomcat grubu oluşturuldu")
+            result_code = self.ssh_api.run_command("sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat")
             if result_code == 0:
-                self.logger.info("sshpass ve rsync paketleri başarıyla kuruldu")
-            else:
-                self.logger.error("sshpass ve rsync paketleri kurulamadı")
+                self.logger.info("tomcat kullanıcısı oluşturuldu ve ev dizini ayarlandı.")
+            result_code = self.ssh_api.run_command("wget http://liderahenk.org/downloads/apache-tomcat-9.0.36.tar.gz")
 
-            agent_files_path = data['fs_agent_file_path']+'/agent-files'
-            if data['location'] == 'remote':
-                self.ssh_api.run_command(cfg_data["cmd_agents_files"].format(agent_files_path))
-                self.logger.info("agent-files dizini oluşturuldu")
-                self.ssh_api.run_command(cfg_data["cmd_chown_agents_files"].format(data["username"], agent_files_path))
-                self.logger.info("agent-files dizini için owner değiştirildi")
+            if result_code == 0:
+                self.logger.info("tomcat başarıyla indirildi.")
             else:
-                if not self.util.is_exist(agent_files_path):
-                    self.util.create_directory_local(agent_files_path)
-                    self.logger.info("agent-files dizini oluşturuldu")
-                    self.util.change_owner(agent_files_path, data['username'], data['username'])
-                    self.logger.info("agent-files dizini için owner değiştirildi")
-                else:
-                    self.logger.info("{0} dizini zaten var".format(agent_files_path))
-
-            result_code = self.ssh_api.run_command(cfg_data["cmd_enable_lider_service"])
-            self.logger.info("Lider servis olarak ayarlandı.")
-        
+                self.logger.error("tomcat indirilirken hata oluştu")
+            result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat")
+            self.logger.info("tomcat dizini oluşturuldu")
+            result_code = self.ssh_api.run_command("sudo tar xf apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1")
+            result_code = self.ssh_api.run_command("sudo chgrp -R tomcat /opt/tomcat")
+            result_code = self.ssh_api.run_command("sudo chmod -R g+r /opt/tomcat/conf")
+            result_code = self.ssh_api.run_command("sudo chmod g+x /opt/tomcat/conf")
+            result_code = self.ssh_api.run_command("sudo chown -R tomcat /opt/tomcat/webapps/ /opt/tomcat/work/ /opt/tomcat/temp/ /opt/tomcat/logs/")
+            self.ssh_api.scp_file(self.tomcat_service_path, '/tmp/')
+            result_code = self.ssh_api.run_command("sudo cp /tmp/tomcat.service /etc/systemd/system/")
+            result_code = self.ssh_api.run_command("sudo systemctl daemon-reload")
+            result_code = self.ssh_api.run_command("sudo systemctl enable tomcat")
+            result_code = self.ssh_api.run_command("sudo systemctl start tomcat")
+            self.logger.info("tomcat konfigürastonu tamamlandı")
+            # # git clone liderv2 project
+            # self.ssh_api.run_command("wget {0}".format(self.lider_web_url))
+            # self.ssh_api.run_command("wget {0}".format(self.lider_web_url))
+            if os.path.isfile(self.lider_tar_path):
+                os.remove(self.lider_tar_path)
+            wget.download(str(self.lider_web_url), self.lider_tar_path)
+            if os.path.isdir(self.liderv2_path):
+                shutil.rmtree(self.liderv2_path)
+            lider_tar = tarfile.open(self.lider_tar_path)
+            lider_tar.extractall(self.dist_path)
+            lider_tar.close()
+            copyfile(self.application_properties_out_path, self.liderv2_app_properties_path)
+            copyfile(self.lider_build_script, self.liderv2_path+"/build.sh")
+            self.logger.info("Lider build ediliyor....")
+            try:
+                process = subprocess.Popen("mvn clean package", stdin=None, env=None, cwd=self.liderv2_path, stderr=subprocess.PIPE,
+                                           stdout=subprocess.PIPE, shell=True)
+                result_code = process.wait()
+                p_out = process.stdout.read().decode("unicode_escape")
+                p_err = process.stderr.read().decode("unicode_escape")
+                self.logger.info("Lider başarıyla build edildi.")
+            except Exception as e:
+                self.logger.error("Lider build edilirken hata oluştu. HATA: {0}".format(str(e)))
+            # self.ssh_api.run_command("tar xf liderv2.tar.gz -C /home/{0}/".format(data["username"]))
+            # self.ssh_api.run_command("sudo apt-get install maven -y")
+            self.ssh_api.scp_file(self.lider_war_path, '/tmp')
+            self.ssh_api.run_command("sudo cp /tmp/ROOT.war /opt/tomcat/webapps/")
+            # self.ssh_api.scp_file(self.application_properties_out_path, '/home/{0}/liderv2/src/main/resources'.format(data['username']))
+            # self.ssh_api.scp_file(self.lider_build_script, '/home/{0}/liderv2/'.format(data['username']))
+            # result_code = self.ssh_api.run_command("/bin/bash /home/{0}/liderv2/build.sh".format(data['username']))
+            result_code = self.ssh_api.run_command("sudo apt-get install guacd -y")
+            if result_code == 0:
+                self.logger.info("Uzak masaüstü sunucusu yapılandırıldı")
+            else:
+                self.logger.error("Uzak masaüstü sunucusu yapılandırılırken hata oluştu. guacd uygulaması kurulamadı")
+            # filer server configuration
+            self.ssh_api.run_command("mkdir -p {0}/agent-files".format(data["fs_agent_file_path"]))
+            self.ssh_api.run_command("sudo chown {0}:{0} {1}/agent-files".format(data['fs_username'], data['fs_agent_file_path']))
+            self.ssh_api.run_command("sudo apt-get install -y sshpass rsync")
+            self.logger.info("lider kurulumu tamamlandı")
         else:
             self.logger.error("LİDER sunucusuna bağlantı sağlanamadığı için kurulum yapılamadı. Lütfen bağlantı ayarlarını kotrol ediniz!")
 
@@ -117,7 +159,13 @@ class LiderInstaller(object):
             "#FS_PASSWORD": data['fs_username_pwd'],
             "#PLUGIN_PATH": data['fs_plugin_path'],
             "#AGREEMENT_PATH": data['fs_agreement_path'],
-            "#AGENT_FILE_PATH": data['fs_agent_file_path']
+            "#AGENT_FILE_PATH": data['fs_agent_file_path'],
+            "#AD_DOMAIN_NAME": data["ad_domain_name"],
+            "#AD_HOSTNAME": data["ad_hostname"],
+            "#AD_HOST": data["ad_host"],
+            "#AD_USER_PWD": data["ad_user_pwd"],
+            "#AD_USER_NAME": data["ad_username"],
+            "#AD_PORT": data["ad_port"]
         }
 
         self.f_lider = open(self.lider_conf_path, 'r+')
@@ -132,7 +180,7 @@ class LiderInstaller(object):
 
     def configure_db_cfg(self, data):
         db_data = {
-            "#DBADDRESS": data['db_server'],
+            "#DBADDRESS": data['db_server_addr'],
             "#DBDATABASE": data['db_name'],
             "#DBUSERNAME": data['db_username'],
             "#DBPASSWORD": data['db_password']
@@ -156,3 +204,23 @@ class LiderInstaller(object):
         base_dn = ''.join(str(x) for x in dn_list)
         base_dn = base_dn.strip(',')
         return base_dn
+
+    def configure_app_properties(self, data):
+        db_server = data["db_server_addr"]
+        # if data['ip'] == db_server:
+        #     db_server = "127.0.0.1"
+        db_data = {
+            "##DATABASEADDRESS##": db_server,
+            "##DATABASENAME##": data['db_name'],
+            "##DATABASEUSERNAME##": data['db_username'],
+            "##DATABASAPASSWORD##": data['db_password']
+        }
+
+        self.f_db = open(self.application_properties_path, 'r+')
+        db_text = self.f_db.read()
+        txt = self.config_manager.replace_all(db_text, db_data)
+        self.f_db_out = open(self.application_properties_out_path, 'w+')
+        self.f_db_out.write(str(txt))
+        self.f_db.close()
+        self.f_db_out.close()
+        self.logger.info("application properties dosyası oluşturuldu")

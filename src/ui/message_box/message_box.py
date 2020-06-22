@@ -17,33 +17,47 @@ class MessageBox(QWidget):
     def __init__(self):
         super().__init__()
         self.title = 'Lider Ahenk Bilgilendirme'
-        self.msgBox = QMessageBox()
-        self.width = 320
+        self.width = 1024
         self.height = 500
 
     def information(self, message):
-        self.msgBox.setMinimumSize(self.width, self.height)
-        self.msgBox.setIcon(self.msgBox.Information)
-        self.msgBox.setWindowTitle(self.title)
-
-        self.msgBox.setInformativeText(_fromUtf8(str(message)))
-        self.msgBox.setDefaultButton(QMessageBox.Ok)
-        self.msgBox.exec_()
-        self.msgBox.setDefaultButton(QMessageBox.No)
+        msgBox = QMessageBox()
+        msgBox.setMinimumSize(self.width, self.height)
+        msgBox.setIcon(msgBox.Information)
+        msgBox.setWindowTitle(self.title)
+        msgBox.setInformativeText(_fromUtf8(str(message)))
+        # msgBox.setDefaultButton(QMessageBox.Ok)
+        msgBox.addButton('Tamam', QMessageBox.NoRole)
+        msgBox.exec_()
+        # self.msgBox.setDefaultButton(QMessageBox.No)
 
     def about(self, message):
         QMessageBox.about(self, "Lider Ahenk Kurulum Uygulaması", message)
 
     def warning(self, message):
+        msgBox = QMessageBox()
+        msgBox.setMinimumSize(self.width, self.height)
+        msgBox.setIcon(msgBox.Warning)
+        msgBox.setWindowTitle("UYARI")
+        msgBox.setInformativeText(_fromUtf8(str(message)))
+        # msgBox.setDefaultButton(QMessageBox.Ok)
+        msgBox.addButton('Tamam', QMessageBox.NoRole)
+        msgBox.exec_()
 
-        self.msgBox.setMinimumSize(self.width, self.height)
-        self.msgBox.setIcon(self.msgBox.Warning)
-        self.msgBox.setWindowTitle("UYARI")
-        self.msgBox.setInformativeText(_fromUtf8(str(message)))
-        self.msgBox.setDefaultButton(QMessageBox.Ok)
-        self.msgBox.exec_()
+    def install_confirm(self, message):
+        msgBox = QMessageBox()
+        msgBox.setMinimumSize(self.width, self.height)
+        msgBox.setIcon(msgBox.Information)
+        msgBox.setWindowTitle(self.title)
+        msgBox.setInformativeText(_fromUtf8(str(message)))
+        yes_install_button = msgBox.addButton('Evet', QMessageBox.YesRole)
+        no_install_button = msgBox.addButton('Hayır', QMessageBox.NoRole)
+        msgBox.exec_()
 
-
+        if msgBox.clickedButton() == yes_install_button:
+            return True
+        if msgBox.clickedButton() == no_install_button:
+            return False
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

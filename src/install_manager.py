@@ -37,7 +37,6 @@ class InstallManager(object):
         ejabberd_installer.install(data)
 
     def install_ldap(self, data):
-
         ldap_installer = OpenLdapInstaller(self.util, self.ssh_status)
         self.logger.info("======>>>>> OpenLDAP sunucu kurulumuna başlanıyor. <<<<<======")
         ldap_installer.install(data)

@@ -6,7 +6,7 @@ import os
 import json
 import subprocess
 
-from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox)
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox
 from ui.log.status_page import StatusPage
@@ -53,6 +53,27 @@ class OpenLdapPage(QWidget):
         self.ladmin_pwd.setPlaceholderText("****")
         self.ladmin_pwd.setEchoMode(QLineEdit.Password)
         self.startUpdateButton = QPushButton("Kuruluma Başla")
+        # Active Directory Parameters
+        self.adSelectionBox = QCheckBox("Active Directory Bilgilerini Düzenle")
+        self.ad_host_label = QLabel("AD Adresi:")
+        self.ad_host = QLineEdit()
+        self.ad_host.setPlaceholderText("192.168.*.*")
+        self.ad_hostname_label = QLabel("AD Sunucu Adı:")
+        self.ad_hostname = QLineEdit()
+        self.ad_hostname.setPlaceholderText("server.ad.liderahenk.org")
+        self.ad_domain_name_label = QLabel("AD Etki Alanı Adı:")
+        self.ad_domain_name = QLineEdit()
+        self.ad_domain_name.setPlaceholderText("ad.liderahenk.org")
+        self.ad_username_label = QLabel("AD Kullanıcı Adı:")
+        self.ad_username = QLineEdit()
+        self.ad_username.setPlaceholderText("administrator")
+        self.ad_user_pwd_label = QLabel("AD Kullanıcı Parolası:")
+        self.ad_user_pwd = QLineEdit()
+        self.ad_user_pwd.setPlaceholderText("****")
+        self.ad_user_pwd.setEchoMode(QLineEdit.Password)
+        self.ad_port_label = QLabel("AD Port:")
+        self.ad_port = QLineEdit()
+        self.ad_port.setPlaceholderText("389")
 
         ## LDAP configuration Layout
         ldapGroup = QGroupBox("OpenLDAP Konfigürasyon Bilgileri")
@@ -63,8 +84,8 @@ class OpenLdapPage(QWidget):
         self.status.statusLabel.setText("OpenLDAP Kurulum Durumu:")
         statusGroup.setLayout(self.status.statusLayout)
 
-        self.ldapLayout.addWidget(self.ldapStatusLabel, 0, 0)
-        self.ldapLayout.addWidget(self.ldapStatusCombo, 0, 1)
+        # self.ldapLayout.addWidget(self.ldapStatusLabel, 0, 0)
+        # self.ldapLayout.addWidget(self.ldapStatusCombo, 0, 1)
         self.ldapLayout.addWidget(self.ldapBaseDnLabel, 1, 0)
         self.ldapLayout.addWidget(self.ldap_base_dn, 1, 1)
         #self.ldapLayout.addWidget(self.ldapAdminLabel, 2, 0)
@@ -77,6 +98,20 @@ class OpenLdapPage(QWidget):
         self.ldapLayout.addWidget(self.ladmin_user, 5, 1)
         self.ldapLayout.addWidget(self.ladminPwdLabel, 6, 0)
         self.ldapLayout.addWidget(self.ladmin_pwd, 6, 1)
+        self.ldapLayout.addWidget(self.adSelectionBox, 7, 0)
+
+        self.ldapLayout.addWidget(self.ad_host_label, 8, 0)
+        self.ldapLayout.addWidget(self.ad_host, 8, 1)
+        self.ldapLayout.addWidget(self.ad_hostname_label, 9, 0)
+        self.ldapLayout.addWidget(self.ad_hostname, 9, 1)
+        self.ldapLayout.addWidget(self.ad_domain_name_label, 10, 0)
+        self.ldapLayout.addWidget(self.ad_domain_name, 10, 1)
+        self.ldapLayout.addWidget(self.ad_username_label, 11, 0)
+        self.ldapLayout.addWidget(self.ad_username, 11, 1)
+        self.ldapLayout.addWidget(self.ad_user_pwd_label, 12, 0)
+        self.ldapLayout.addWidget(self.ad_user_pwd, 12, 1)
+        self.ldapLayout.addWidget(self.ad_port_label, 13, 0)
+        self.ldapLayout.addWidget(self.ad_port, 13, 1)
 
         ldapGroup.setLayout(self.ldapLayout)
         mainLayout = QVBoxLayout()
@@ -89,9 +124,10 @@ class OpenLdapPage(QWidget):
 
         self.setLayout(mainLayout)
         self.startUpdateButton.clicked.connect(self.save_ldap_data)
+        self.adSelectionBox.stateChanged.connect(self.ad_change_state)
+        self.ad_conf_set_visible()
 
     def save_ldap_data(self):
-
         with open(self.server_list_path) as f:
             server_data = json.load(f)
             if server_data["selection"] == "multi":
@@ -105,7 +141,6 @@ class OpenLdapPage(QWidget):
                 password = server_data["password"]
                 location = server_data["location"]
 
-
         if self.ldapStatusCombo.currentIndex() == 0:
             ldap_status = 'new'
         else:
@@ -116,7 +151,6 @@ class OpenLdapPage(QWidget):
         l_org_name = l_org_name[0]
 
         self.data = {
-
             'location': location,
             # Server Configuration
             'ip': ip,
@@ -137,7 +171,6 @@ class OpenLdapPage(QWidget):
             'repo_key': server_data["repo_key"]
         # yeni ldap kur ya da varolan ldapı konfigüre et 'new' ya da 'update' parametreleri alıyor
         }
-
         if self.data['l_base_dn'] == "" or self.data['l_config_pwd'] == "" or self.data['ladmin_user'] == "" or self.data['l_admin_pwd'] == "" or self.data['ladmin_pwd'] == ""\
                 or self.data['ip'] =="" or self.data['username'] == "" or self.data['password'] =="":
             self.msg_box.warning("Lütfen aşağıdaki alanları doldurunuz.\n"
@@ -172,7 +205,6 @@ class OpenLdapPage(QWidget):
             subprocess.Popen(["xterm", "-e", "tail", "-f",
                               self.log_path])
 
-
             if self.data['location'] == 'remote':
                 self.im.ssh_connect(self.data)
                 # self.im.install_ldap(self.data)
@@ -184,3 +216,33 @@ class OpenLdapPage(QWidget):
             self.status.install_status.setStyleSheet("background-color: cyan")
             self.msg_box.information("OpenLDAP kurulumu tamamlandı")
 
+    def ad_change_state(self):
+        if self.adSelectionBox.isChecked() is True:
+            self.ad_host_label.setVisible(True)
+            self.ad_host.setVisible(True)
+            self.ad_hostname_label.setVisible(True)
+            self.ad_hostname.setVisible(True)
+            self.ad_domain_name_label.setVisible(True)
+            self.ad_domain_name.setVisible(True)
+            self.ad_username_label.setVisible(True)
+            self.ad_username.setVisible(True)
+            self.ad_user_pwd_label.setVisible(True)
+            self.ad_user_pwd.setVisible(True)
+            self.ad_port_label.setVisible(True)
+            self.ad_port.setVisible(True)
+        else:
+            self.ad_conf_set_visible()
+
+    def ad_conf_set_visible(self):
+        self.ad_host_label.setVisible(False)
+        self.ad_host.setVisible(False)
+        self.ad_hostname_label.setVisible(False)
+        self.ad_hostname.setVisible(False)
+        self.ad_domain_name_label.setVisible(False)
+        self.ad_domain_name.setVisible(False)
+        self.ad_username_label.setVisible(False)
+        self.ad_username.setVisible(False)
+        self.ad_user_pwd_label.setVisible(False)
+        self.ad_user_pwd.setVisible(False)
+        self.ad_port_label.setVisible(False)
+        self.ad_port.setVisible(False)

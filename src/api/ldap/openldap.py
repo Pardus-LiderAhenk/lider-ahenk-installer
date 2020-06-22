@@ -3,7 +3,6 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import os
-
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 
@@ -24,7 +23,6 @@ class OpenLdapInstaller(object):
 
         config_manager = ConfigManager()
         cfg_data = config_manager.read()
-
         base_dn = self.base_dn_parse(data)
         l_admin_cn = "cn="+str(data['l_admin_cn'])
 
@@ -39,7 +37,13 @@ class OpenLdapInstaller(object):
             "#CNCONFIGADMINPASSWD": data["l_config_pwd"],
             "#LIDERCONSOLEUSER": data["ladmin_user"],
             "#LIDERCONSOLEPWD": data["ladmin_pwd"],
-            "#LIDER_SERVER_ADDR": data["lider_server_addr"]
+            "#LIDER_SERVER_ADDR": data["lider_server_addr"],
+            "#AD_DOMAIN_NAME": data["ad_domain_name"],
+            "#AD_HOSTNAME": data["ad_hostname"],
+            "#AD_HOST": data["ad_host"],
+            "#ADUSER_PWD": data["ad_user_pwd"],
+            "#AD_USER_NAME": data["ad_username"],
+            "#AD_PORT": data["ad_port"]
         }
 
         # copy liderahenk.ldif file to ldap server
@@ -47,7 +51,6 @@ class OpenLdapInstaller(object):
         self.logger.info("liderahenk.ldif dosyası OpenLDAP sunucusuna koplayandı")
 
         if data["ldap_status"] == "new":
-
             #edit ldap_install_temp script
             self.f1 = open(self.ldap_config_path, 'r+')
             my_text = self.f1.read()
@@ -58,7 +61,7 @@ class OpenLdapInstaller(object):
             self.f1.close()
             self.f2.close()
 
-            if self.ssh_status == "Successfully Authenticated" or data['location'] == 'local':
+            if self.ssh_status == "Successfully Authenticated":
                 #copy ldap_install  script to ldap server
                 self.ssh_api.scp_file(self.ldap_config_out_path, '/tmp')
                 self.logger.info("ldapconfig betiği OpenLDAP sunucusuna kopyalandı")
@@ -97,7 +100,6 @@ class OpenLdapInstaller(object):
             else:
                  self.logger.error("OpenLDAP sunucusuna bağlantı sağlanamadı için kurulum yapılamadı. Lütfen bağlantı ayarlarını kotrol ediniz!")
             #     # print("bağlantı sağlanamadığı için kurulum yapılamadı..")
-
         else:
             self.f1 = open(self.update_ldap_path, 'r+')
             my_text = self.f1.read()

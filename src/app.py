@@ -2,7 +2,11 @@
 # -*- coding: utf-8 -*-
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
+import os
+import signal
 import sys
+
+import psutil
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QDialog, QHBoxLayout, QListView, QListWidget, QListWidgetItem, QPushButton,
@@ -25,6 +29,7 @@ class ConfigDialog(QDialog):
 
         self.msg_box = MessageBox()
         self.ejabberd = EjabberdPage()
+        self.lider_page = LiderPage()
 
         self.contentsWidget = QListWidget()
         self.contentsWidget.setViewMode(QListView.IconMode)
@@ -36,27 +41,31 @@ class ConfigDialog(QDialog):
         self.contentsWidget.setSpacing(12)
 
         self.pagesWidget = QStackedWidget()
-        self.pagesWidget.setMinimumHeight(700)
-        self.pagesWidget.setMinimumWidth(720)
+        self.pagesWidget.setMinimumHeight(800)
+        self.pagesWidget.setMinimumWidth(1024)
 
         self.pagesWidget.addWidget(SettingsPage())
         # self.pagesWidget.addWidget(DatabasePage())
         # self.pagesWidget.addWidget(OpenLdapPage())
         # self.pagesWidget.addWidget(EjabberdPage())
-        self.pagesWidget.addWidget(LiderPage())
-        self.pagesWidget.addWidget(LiderConsolePage())
-        self.pagesWidget.addWidget(AhenkPage())
-        self.pagesWidget.addWidget(WatchLog())
+        # self.pagesWidget.addWidget(LiderPage())
+        # self.pagesWidget.addWidget(LiderConsolePage())
+        # self.pagesWidget.addWidget(AhenkPage())
+        # self.pagesWidget.addWidget(WatchLog())
         closeButton = QPushButton("Kapat")
-        self.createIcons()
+        aboutButton = QPushButton("Hakkında")
+        # self.createIcons()
         self.contentsWidget.setCurrentRow(0)
         closeButton.clicked.connect(self.close_page)
+        aboutButton.clicked.connect(self.about_lider_installer)
 
         horizontalLayout = QHBoxLayout()
-        horizontalLayout.addWidget(self.contentsWidget)
+        # horizontalLayout.addWidget(self.contentsWidget)
         horizontalLayout.addWidget(self.pagesWidget, 1)
 
         buttonsLayout = QHBoxLayout()
+        buttonsLayout.addStretch(0)
+        buttonsLayout.addWidget(aboutButton)
         buttonsLayout.addStretch(1)
         buttonsLayout.addWidget(closeButton)
 
@@ -71,8 +80,14 @@ class ConfigDialog(QDialog):
         self.setWindowIcon(QIcon(":/images/liderahenk-32.png"))
 
     def close_page(self):
-        # TODO xterm kapatılacak......
+        for proc in psutil.process_iter():
+            # check whether the process name matches
+            if proc.name() == "xterm":
+                proc.kill()
         self.close()
+
+    def about_lider_installer(self):
+        self.msg_box.about("Lider Ahenk Merkezi Yönetim Sistemi Kurulum Uygulaması\nDaha fazla bilgi için...\nwww.liderahenk.org\nVersiyon: 2.0")
 
     def changePage(self, current, previous):
         if not current:
@@ -80,16 +95,12 @@ class ConfigDialog(QDialog):
         self.pagesWidget.setCurrentIndex(self.contentsWidget.row(current))
 
     def createIcons(self):
-
-        # asdButton = QListWidgetItem(self.contentsWidget)
-
         vagrantButton = QListWidgetItem(self.contentsWidget)
         vagrantButton.setIcon(QIcon(':/images/settings.png'))
-        vagrantButton.setText("Ayarlar")
+        vagrantButton.setText("Sunucu\nAyarları")
         vagrantButton.setTextAlignment(Qt.AlignHCenter)
         vagrantButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
-        #
         # dbButton = QListWidgetItem(self.contentsWidget)
         # dbButton.setIcon(QIcon(':/images/database.png'))
         # dbButton.setText("Veritabanı")
@@ -108,34 +119,33 @@ class ConfigDialog(QDialog):
         # xmppButton.setTextAlignment(Qt.AlignHCenter)
         # xmppButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
-        liderButton = QListWidgetItem(self.contentsWidget)
-        liderButton.setIcon(QIcon(':/images/liderahenk.png'))
-        liderButton.setText("Lider")
-        liderButton.setTextAlignment(Qt.AlignHCenter)
-        liderButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        # liderButton = QListWidgetItem(self.contentsWidget)
+        # liderButton.setIcon(QIcon(':/images/liderahenk.png'))
+        # liderButton.setText("Lider Kur")
+        # liderButton.setTextAlignment(Qt.AlignHCenter)
+        # liderButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
-        consoleButton = QListWidgetItem(self.contentsWidget)
-        consoleButton.setIcon(QIcon(':/images/lider_console.png'))
-        consoleButton.setText("Lider\nArayüz")
-        consoleButton.setTextAlignment(Qt.AlignHCenter)
-        consoleButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        # consoleButton = QListWidgetItem(self.contentsWidget)
+        # consoleButton.setIcon(QIcon(':/images/lider_console.png'))
+        # consoleButton.setText("Lider\nArayüz")
+        # consoleButton.setTextAlignment(Qt.AlignHCenter)
+        # consoleButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
-        ahenkButton = QListWidgetItem(self.contentsWidget)
-        ahenkButton.setIcon(QIcon(':/images/ahenk.png'))
-        ahenkButton.setText("Ahenk")
-        ahenkButton.setTextAlignment(Qt.AlignHCenter)
-        ahenkButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-
-        logButton = QListWidgetItem(self.contentsWidget)
-        logButton.setIcon(QIcon(':/images/log.png'))
-        logButton.setText("Log")
-        logButton.setTextAlignment(Qt.AlignHCenter)
-        logButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        # ahenkButton = QListWidgetItem(self.contentsWidget)
+        # ahenkButton.setIcon(QIcon(':/images/ahenk.png'))
+        # ahenkButton.setText("Ahenk Kur")
+        # ahenkButton.setTextAlignment(Qt.AlignHCenter)
+        # ahenkButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+        #
+        # logButton = QListWidgetItem(self.contentsWidget)
+        # logButton.setIcon(QIcon(':/images/log.png'))
+        # logButton.setText("Log")
+        # logButton.setTextAlignment(Qt.AlignHCenter)
+        # logButton.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
 
         self.contentsWidget.currentItemChanged.connect(self.changePage)
 
 if __name__ == '__main__':
-
     app = QApplication(sys.argv)
     dialog = ConfigDialog()
     sys.exit(dialog.exec_())

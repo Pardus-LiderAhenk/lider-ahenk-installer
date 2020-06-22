@@ -25,7 +25,7 @@ class LiderConsoleInstaller(object):
         repo_key = data["repo_key"]
         repo_key = repo_key.rsplit("/")[-1]
 
-        if self.ssh_status == "Successfully Authenticated" or data['location'] == 'local':
+        if self.ssh_status == "Successfully Authenticated":
             cfg_data = self.config_manager.read()
             result_code = self.ssh_api.run_command(cfg_data["cmd_soft_properties"])
             if result_code == 0:

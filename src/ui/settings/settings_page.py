@@ -4,131 +4,232 @@
 
 import json
 import os
-
 from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTableWidget,
                              QTableWidgetItem, QComboBox, QCheckBox)
-
 from install_manager import InstallManager
-from ui.lider.lider_page import LiderPage
 from ui.message_box.message_box import MessageBox
+from ui.lider.lider_page import LiderPage
 from api.util.util import Util
 
 class SettingsPage(QWidget):
     def __init__(self, parent=None):
 
         super(SettingsPage, self).__init__(parent)
-        self.server_list_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/server_list.json')
+        self.liderahenk_params_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderahenk_params.json')
         if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')):
             os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist'))
 
         self.im = InstallManager()
         self.msg_box = MessageBox()
-        self.lider_page = LiderPage()
-
         self.util = Util()
         self.repo_type = None
+        self.lider_page = LiderPage()
 
-        #server selection parameters
-        self.standartSelectionBox = QCheckBox("Standart")
-        self.advancedSelectionBox = QCheckBox("Gelişmiş")
-        self.standartSelectionBox.setChecked(True)
+        self.allComponentChekbox = QCheckBox("Tüm Bileşenler Tek Sunucuya Kurulsun")
 
-        ## server selection layout
-        self.connectSelectionGroup = QGroupBox("Lider Ahenk Sunucu Platform Bilgileri")
-        self.connectSelectionLayout = QGridLayout()
-        self.connectSelectionLayout.addWidget(self.standartSelectionBox,0,0)
-        self.connectSelectionLayout.addWidget(self.advancedSelectionBox,0,1)
-        self.connectSelectionGroup.setLayout(self.connectSelectionLayout)
+        # database server
+        self.databaseCheckBox = QCheckBox("Veritabanı")
+        self.databaseCheckBox.setChecked(True)
+        self.db_server_addr = QLineEdit()
+        self.db_server_addr.setPlaceholderText("Veritabanı Adresi")
+        self.db_server_username = QLineEdit()
+        self.db_server_username.setPlaceholderText("Kullanıcı Adı")
+        self.db_server_username_pwd = QLineEdit()
+        self.db_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
+        self.db_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.db_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
 
-        self.standartSelectionBox.stateChanged.connect(self.standart_selection)
-        self.advancedSelectionBox.stateChanged.connect(self.advanced_selection)
+        self.databaseGroup = QGroupBox()
+        self.databaseLayout = QGridLayout()
+        self.databaseLayout.addWidget(self.databaseCheckBox, 0, 0)
+        self.databaseLayout.addWidget(self.db_server_addr, 1, 0)
+        self.databaseLayout.addWidget(self.db_server_username, 2, 0)
+        self.databaseLayout.addWidget(self.db_server_username_pwd, 3, 0)
+        self.databaseLayout.addWidget(self.db_checkControlButton, 4, 0)
+        self.databaseGroup.setLayout(self.databaseLayout)
 
-        ## server settings parameters
-        self.serverSelectionCombo = QComboBox()
-        # self.serverSelectionCombo.setDisabled(True)
-        self.serverSelectionCombo.setVisible(False)
-        self.serverSelectionLabel = QLabel("Bileşen Seç:")
-        self.serverSelectionLabel.setVisible(False)
-        self.serverSelectionCombo.addItem("Veritabanı")
-        self.serverSelectionCombo.addItem("OpenLDAP")
-        self.serverSelectionCombo.addItem("XMPP")
-        self.serverSelectionCombo.addItem("Lider")
+        # ldap server
+        self.ldapCheckBox = QCheckBox("OpenLDAP")
+        self.ldapCheckBox.setChecked(True)
+        self.ldap_server_addr = QLineEdit()
+        self.ldap_server_addr.setPlaceholderText("OpenLDAP Adresi")
+        self.ldap_server_username = QLineEdit()
+        self.ldap_server_username.setPlaceholderText("Kullanıcı Adı")
+        self.ldap_server_username_pwd = QLineEdit()
+        self.ldap_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
+        self.ldap_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.ldap_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
 
-        self.serverIpLabel = QLabel("Sunucu Adresi:")
-        self.server_ip = QLineEdit()
-        self.server_ip.setPlaceholderText("192.168.*.*")
-        self.usernameLabel = QLabel("Kullanıcı Adı:")
-        self.username = QLineEdit()
-        self.username.setPlaceholderText("lider")
-        self.passwordLabel = QLabel("Kullanıcı Parolası:")
-        self.password = QLineEdit()
-        self.password.setPlaceholderText("****")
-        self.password.setEchoMode(QLineEdit.Password)
-        self.addButton = QPushButton("Ekle")
-        self.checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
-        self.saveButton = QPushButton("Ayarları Kaydet")
-        # disabled by default saveButton
-        # self.saveButton.setDisabled(True)
-        self.addButton.setVisible(False)
+        self.ldapGroup = QGroupBox()
+        self.ldapLayout = QGridLayout()
+        self.ldapLayout.addWidget(self.ldapCheckBox, 0, 0)
+        self.ldapLayout.addWidget(self.ldap_server_addr, 1, 0)
+        self.ldapLayout.addWidget(self.ldap_server_username, 2, 0)
+        self.ldapLayout.addWidget(self.ldap_server_username_pwd, 3, 0)
+        self.ldapGroup.setLayout(self.ldapLayout)
+
+        # ejabberd server
+        self.ejabberdCheckBox = QCheckBox("XMPP")
+        self.ejabberdCheckBox.setChecked(True)
+        self.ejabberd_server_addr = QLineEdit()
+        self.ejabberd_server_addr.setPlaceholderText("XMPP Adresi")
+        self.ejabberd_server_username = QLineEdit()
+        self.ejabberd_server_username.setPlaceholderText("Kullanıcı Adı")
+        self.ejabberd_server_username_pwd = QLineEdit()
+        self.ejabberd_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
+        self.ejabberd_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.ejabberd_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
+
+        self.ejabberdGroup = QGroupBox()
+        self.ejabberdLayout = QGridLayout()
+        self.ejabberdLayout.addWidget(self.ejabberdCheckBox, 0, 0)
+        self.ejabberdLayout.addWidget(self.ejabberd_server_addr, 1, 0)
+        self.ejabberdLayout.addWidget(self.ejabberd_server_username, 2, 0)
+        self.ejabberdLayout.addWidget(self.ejabberd_server_username_pwd, 3, 0)
+        self.ejabberdGroup.setLayout(self.ejabberdLayout)
+
+        # lider server
+        self.liderCheckBox = QCheckBox("Lider")
+        self.liderCheckBox.setChecked(True)
+        self.lider_server_addr = QLineEdit()
+        self.lider_server_addr.setPlaceholderText("Lider Adresi")
+        self.lider_server_username = QLineEdit()
+        self.lider_server_username.setPlaceholderText("Kullanıcı Adı")
+        self.lider_server_username_pwd = QLineEdit()
+        self.lider_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
+        self.lider_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.lider_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
+
+        self.liderGroup = QGroupBox()
+        self.liderLayout = QGridLayout()
+        self.liderLayout.addWidget(self.liderCheckBox, 0, 0)
+        self.liderLayout.addWidget(self.lider_server_addr, 1, 0)
+        self.liderLayout.addWidget(self.lider_server_username, 2, 0)
+        self.liderLayout.addWidget(self.lider_server_username_pwd, 3, 0)
+        self.liderGroup.setLayout(self.liderLayout)
 
         ## Connect Layout
         self.connectGroup = QGroupBox("Lider Ahenk Sunucu Erişim Bilgileri")
         self.connectLayout = QGridLayout()
-        self.connectLayout.addWidget(self.serverSelectionLabel, 0, 0)
-        self.connectLayout.addWidget(self.serverSelectionCombo, 0, 1)
-        self.connectLayout.addWidget(self.serverIpLabel, 2, 0)
-        self.connectLayout.addWidget(self.server_ip, 2, 1)
-        self.connectLayout.addWidget(self.usernameLabel, 3, 0)
-        self.connectLayout.addWidget(self.username, 3, 1)
-        self.connectLayout.addWidget(self.passwordLabel, 4, 0)
-        self.connectLayout.addWidget(self.password, 4, 1)
-        self.connectLayout.addWidget(self.addButton, 5,2)
-        self.connectLayout.addWidget(self.checkControlButton, 5, 1)
+        self.connectLayout.addWidget(self.allComponentChekbox, 0, 0)
+        self.connectLayout.addWidget(self.databaseCheckBox, 1, 0)
+        self.connectLayout.addWidget(self.db_server_addr, 2, 0)
+        self.connectLayout.addWidget(self.db_server_username, 3, 0)
+        self.connectLayout.addWidget(self.db_server_username_pwd, 4, 0)
+        self.connectLayout.addWidget(self.db_checkControlButton, 5, 0)
+
+        self.connectLayout.addWidget(self.ldapCheckBox, 1, 1)
+        self.connectLayout.addWidget(self.ldap_server_addr, 2, 1)
+        self.connectLayout.addWidget(self.ldap_server_username, 3, 1)
+        self.connectLayout.addWidget(self.ldap_server_username_pwd, 4, 1)
+        self.connectLayout.addWidget(self.ldap_checkControlButton, 5, 1)
+
+        self.connectLayout.addWidget(self.ejabberdCheckBox, 1, 2)
+        self.connectLayout.addWidget(self.ejabberd_server_addr, 2, 2)
+        self.connectLayout.addWidget(self.ejabberd_server_username, 3, 2)
+        self.connectLayout.addWidget(self.ejabberd_server_username_pwd, 4, 2)
+        self.connectLayout.addWidget(self.ejabberd_checkControlButton, 5, 2)
+
+        self.connectLayout.addWidget(self.liderCheckBox, 1, 3)
+        self.connectLayout.addWidget(self.lider_server_addr, 2, 3)
+        self.connectLayout.addWidget(self.lider_server_username, 3, 3)
+        self.connectLayout.addWidget(self.lider_server_username_pwd, 4, 3)
+        self.connectLayout.addWidget(self.lider_checkControlButton, 5, 3)
         self.connectGroup.setLayout(self.connectLayout)
 
-        ## server list table
-        self.serverlistGroup = QGroupBox("Lider Ahenk Sunucu Listesi")
-        self.serverlistLayout = QGridLayout()
-        self.tableWidget = QTableWidget()
-        # self.tableWidget.setMinimumHeight(250)
-        self.serverlistGroup.setVisible(False)
+        ## lider configure layout
+        self.ldapAdminLabel = QLabel("LDAP Admin:")
+        self.ldap_admin = QLineEdit()
+        self.ldapAdminPwdLabel = QLabel("Sistem Admin Parolası:")
+        self.ldap_admin_pwd = QLineEdit()
+        self.ldap_admin_pwd.setPlaceholderText("****")
+        self.ldap_admin_pwd.setEchoMode(QLineEdit.Password)
+        self.ldapBaseDnLabel = QLabel("LDAP Base DN:")
+        self.ldap_base_dn = QLineEdit()
+        self.ldap_base_dn.setPlaceholderText("liderahenk.org")
+        self.ldapConfigPwdLabel = QLabel("LDAP Config Kullanıcı Parolası:")
+        self.l_config_pwd = QLineEdit()
+        self.l_config_pwd.setPlaceholderText("****")
+        self.l_config_pwd.setEchoMode(QLineEdit.Password)
+        self.ladminLabel = QLabel("Lider Arayüz Kullanıcı Adı:")
+        self.ladmin_user = QLineEdit()
+        self.ladmin_user.setPlaceholderText("lider_console")
+        self.ladminPwdLabel = QLabel("Lider Arayüz Kullanıcı Parolası:")
+        self.ladmin_pwd = QLineEdit()
+        self.ladmin_pwd.setPlaceholderText("****")
+        self.ladmin_pwd.setEchoMode(QLineEdit.Password)
 
-        ## set read only table
-        self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
+        # Active Directory params
+        self.adSelectionBox = QCheckBox("Active Directory Bilgilerini Düzenle")
+        self.ad_host_label = QLabel("AD Adresi:")
+        self.ad_host = QLineEdit()
+        self.ad_host.setPlaceholderText("192.168.*.*")
+        self.ad_hostname_label = QLabel("AD Sunucu Adı:")
+        self.ad_hostname = QLineEdit()
+        self.ad_hostname.setPlaceholderText("server.ad.liderahenk.org")
+        self.ad_domain_name_label = QLabel("AD Etki Alanı Adı:")
+        self.ad_domain_name = QLineEdit()
+        self.ad_domain_name.setPlaceholderText("ad.liderahenk.org")
+        self.ad_username_label = QLabel("AD Kullanıcı Adı:")
+        self.ad_username = QLineEdit()
+        self.ad_username.setPlaceholderText("administrator")
+        self.ad_user_pwd_label = QLabel("AD Kullanıcı Parolası:")
+        self.ad_user_pwd = QLineEdit()
+        self.ad_user_pwd.setPlaceholderText("****")
+        self.ad_user_pwd.setEchoMode(QLineEdit.Password)
+        self.ad_port_label = QLabel("AD Port:")
+        self.ad_port = QLineEdit()
+        self.ad_port.setPlaceholderText("389")
 
-        # set column count
-        self.tableWidget.setColumnCount(5)
-        headers = self.tableWidget.horizontalHeader()
-        # headers.setSectionResizeMode(QHeaderView.ResizeToContents)
-        headers.setStretchLastSection(True)
-        self.tableWidget.setHorizontalHeaderLabels(["Bileşen Adı", "Sunucu Adresi", "Kullanıcı Adı", "Kullanıcı Parolası", "İşlem"])
-        self.serverlistLayout.addWidget(self.tableWidget)
-        self.serverlistGroup.setLayout(self.serverlistLayout)
+        self.install_button = QPushButton("Kuruluma Başla")
+
+        self.configGroup = QGroupBox("Lider Ahenk Sunucu Konfigürasyonları")
+        self.configLayout = QGridLayout()
+        self.configLayout.addWidget(self.ldapBaseDnLabel, 0, 0)
+        self.configLayout.addWidget(self.ldap_base_dn, 0, 1)
+        self.configLayout.addWidget(self.ldapAdminPwdLabel, 1, 0)
+        self.configLayout.addWidget(self.ldap_admin_pwd, 1, 1)
+        self.configLayout.addWidget(self.ladminLabel, 2, 0)
+        self.configLayout.addWidget(self.ladmin_user, 2, 1)
+        self.configLayout.addWidget(self.ladminPwdLabel, 3, 0)
+        self.configLayout.addWidget(self.ladmin_pwd, 3, 1)
+
+        self.configLayout.addWidget(self.adSelectionBox, 4, 0)
+        self.configLayout.addWidget(self.ad_host_label, 5, 0)
+        self.configLayout.addWidget(self.ad_host, 5, 1)
+        self.configLayout.addWidget(self.ad_domain_name_label, 6, 0)
+        self.configLayout.addWidget(self.ad_domain_name, 6, 1)
+        self.configLayout.addWidget(self.ad_hostname_label, 7, 0)
+        self.configLayout.addWidget(self.ad_hostname, 7, 1)
+        self.configLayout.addWidget(self.ad_username_label, 8, 0)
+        self.configLayout.addWidget(self.ad_username, 8, 1)
+        self.configLayout.addWidget(self.ad_user_pwd_label, 9, 0)
+        self.configLayout.addWidget(self.ad_user_pwd, 9, 1)
+        self.configLayout.addWidget(self.ad_port_label, 10, 0)
+        self.configLayout.addWidget(self.ad_port, 10, 1)
+        self.configGroup.setLayout(self.configLayout)
+
+        self.adSelectionBox.stateChanged.connect(self.ad_change_state)
+        self.ad_conf_set_visible()
+
+        ## server selection layout
+        self.connectSelectionGroup = QGroupBox("Lider Ahenk Sunucu Platform Bilgileri")
+        self.connectSelectionLayout = QGridLayout()
+        self.connectSelectionGroup.setLayout(self.connectSelectionLayout)
 
         ## repository parameters
         self.repoMainBox = QCheckBox("Ana Paket Deposu")
         self.repoTestBox = QCheckBox("Test Paket Deposu")
         self.repoMainBox.setChecked(True)
-
         self.repoLabel = QLabel("Depo Adresi:")
         self.repo_addr = QLineEdit("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
-
         self.repoKeyLdabel = QLabel("Depo Key Dosyası:")
         self.repo_key = QLineEdit("http://repo.liderahenk.org/liderahenk-archive-keyring.asc")
-
         self.repoMainBox.stateChanged.connect(self.main_repo)
         self.repoTestBox.stateChanged.connect(self.test_repo)
 
-        ## Connect Settings Layout
-        self.connectSettingsGroup = QGroupBox("1-LİDER AHENK SUNUCU BAĞLANTI AYARLARI")
-        self.connectSettingsLayout = QGridLayout()
-        self.connectSettingsLayout.addWidget(self.connectSelectionGroup)
-        self.connectSettingsLayout.addWidget(self.connectGroup)
-        self.connectSettingsLayout.addWidget(self.serverlistGroup)
-        self.connectSettingsGroup.setLayout(self.connectSettingsLayout)
-
         ## Repository Layout
-        self.repoGroup = QGroupBox("2-LİDER AHENK PAKET DEPOSU AYARLARI")
+        self.repoGroup = QGroupBox("Lider Ahenk Paket Deposu Ayarları")
         self.repoLayout = QGridLayout()
         self.repoLayout.addWidget(self.repoMainBox, 0, 0)
         self.repoLayout.addWidget(self.repoTestBox, 0, 1)
@@ -138,28 +239,166 @@ class SettingsPage(QWidget):
         self.repoLayout.addWidget(self.repo_key, 2, 1)
         self.repoGroup.setLayout(self.repoLayout)
 
-        mainLayout = QVBoxLayout()
-        mainLayout.addWidget(self.connectSettingsGroup)
-        mainLayout.addSpacing(10)
-        mainLayout.addWidget(self.repoGroup)
-        mainLayout.addSpacing(12)
-        mainLayout.addWidget(self.saveButton)
-        mainLayout.addStretch(1)
-        self.setLayout(mainLayout)
+        self.statusLabel = QLabel("Lider kurulum durumu")
+        self.install_status = QLineEdit()
+        self.install_status.setReadOnly(True)
+        self.install_status.setPlaceholderText("Lider Ahenk Kurulum")
 
-        self.saveButton.clicked.connect(self.save_settings)
-        self.addButton.clicked.connect(self.add_server)
-        self.checkControlButton.clicked.connect(self.ssh_control)
+        ## Install Status Layout
+        self.statusGroup = QGroupBox()
+        self.statusLayout = QGridLayout()
+        self.statusLayout.addWidget(self.statusLabel, 0, 0)
+        self.statusLayout.addWidget(self.install_status, 0, 1)
+        self.statusGroup.setLayout(self.statusLayout)
+
+        self.mainLayout = QVBoxLayout()
+        self.mainLayout.addWidget(self.connectGroup)
+        self.mainLayout.addSpacing(12)
+        self.mainLayout.addWidget(self.repoGroup)
+        self.mainLayout.addSpacing(10)
+        self.mainLayout.addWidget(self.configGroup)
+        self.mainLayout.addWidget(self.install_button)
+        self.mainLayout.addWidget(self.statusGroup)
+        self.mainLayout.addStretch(1)
+        self.setLayout(self.mainLayout)
+
+        self.db_checkControlButton.clicked.connect(lambda: self.ssh_control("db"))
+        self.ldap_checkControlButton.clicked.connect(lambda: self.ssh_control("ldap"))
+        self.ejabberd_checkControlButton.clicked.connect(lambda: self.ssh_control("ejabberd"))
+        self.lider_checkControlButton.clicked.connect(lambda: self.ssh_control("lider"))
+
+        self.databaseCheckBox.stateChanged.connect(self.change_database_checkbox)
+        self.ldapCheckBox.stateChanged.connect(self.change_ldap_checkbox)
+        self.ejabberdCheckBox.stateChanged.connect(self.change_ejabberd_checkbox)
+        self.liderCheckBox.stateChanged.connect(self.change_lider_checkbox)
+        self.allComponentChekbox.stateChanged.connect(self.all_components_install)
+
+        self.install_button.clicked.connect(self.get_params)
+        self.allComponentChekbox.setChecked(True)
         self.get_server_settings()
 
-    def main_repo(self):
+    def change_database_checkbox(self):
+        if self.databaseCheckBox.isChecked():
+            self.db_server_username.setDisabled(False)
+            self.db_server_username_pwd.setDisabled(False)
+            self.db_checkControlButton.setDisabled(False)
+        else:
+            self.db_server_username.setDisabled(True)
+            self.db_server_username_pwd.setDisabled(True)
+            self.db_checkControlButton.setDisabled(True)
 
+    def change_ldap_checkbox(self):
+        if self.ldapCheckBox.isChecked():
+            self.ldap_server_username.setDisabled(False)
+            self.ldap_server_username_pwd.setDisabled(False)
+            self.ldap_checkControlButton.setDisabled(False)
+        else:
+            self.ldap_server_username.setDisabled(True)
+            self.ldap_server_username_pwd.setDisabled(True)
+            self.ldap_checkControlButton.setDisabled(True)
+
+    def change_ejabberd_checkbox(self):
+        if self.ejabberdCheckBox.isChecked():
+            self.ejabberd_server_username.setDisabled(False)
+            self.ejabberd_server_username_pwd.setDisabled(False)
+            self.ejabberd_checkControlButton.setDisabled(False)
+        else:
+            self.ejabberd_server_username.setDisabled(True)
+            self.ejabberd_server_username_pwd.setDisabled(True)
+            self.ejabberd_checkControlButton.setDisabled(True)
+
+    def change_lider_checkbox(self):
+        if self.liderCheckBox.isChecked():
+            self.lider_server_username.setDisabled(False)
+            self.lider_server_username_pwd.setDisabled(False)
+            self.lider_checkControlButton.setDisabled(False)
+        else:
+            self.lider_server_username.setDisabled(True)
+            self.lider_server_username_pwd.setDisabled(True)
+            self.lider_checkControlButton.setDisabled(True)
+
+    def all_components_install(self):
+        if self.allComponentChekbox.isChecked():
+            self.databaseCheckBox.setChecked(True)
+            self.ldapCheckBox.setChecked(True)
+            self.ejabberdCheckBox.setChecked(True)
+            self.liderCheckBox.setChecked(True)
+            self.databaseCheckBox.setDisabled(True)
+
+            self.ejabberdCheckBox.setDisabled(True)
+            self.ejabberd_server_addr.setDisabled(True)
+            self.ejabberd_server_username.setDisabled(True)
+            self.ejabberd_server_username_pwd.setDisabled(True)
+            self.ejabberd_checkControlButton.setDisabled(True)
+
+            self.liderCheckBox.setDisabled(True)
+            self.lider_server_addr.setDisabled(True)
+            self.lider_server_username.setDisabled(True)
+            self.lider_server_username_pwd.setDisabled(True)
+            self.lider_checkControlButton.setDisabled(True)
+
+            self.ldapCheckBox.setDisabled(True)
+            self.ldap_server_addr.setDisabled(True)
+            self.ldap_server_username.setDisabled(True)
+            self.ldap_server_username_pwd.setDisabled(True)
+            self.ldap_checkControlButton.setDisabled(True)
+        else:
+            self.databaseCheckBox.setDisabled(False)
+            self.ejabberdCheckBox.setDisabled(False)
+            self.ejabberd_server_addr.setDisabled(False)
+            self.ejabberd_server_username.setDisabled(False)
+            self.ejabberd_server_username_pwd.setDisabled(False)
+            self.ejabberd_checkControlButton.setDisabled(False)
+
+            self.liderCheckBox.setDisabled(False)
+            self.lider_server_addr.setDisabled(False)
+            self.lider_server_username.setDisabled(False)
+            self.lider_server_username_pwd.setDisabled(False)
+            self.lider_checkControlButton.setDisabled(False)
+
+            self.ldapCheckBox.setDisabled(False)
+            self.ldap_server_addr.setDisabled(False)
+            self.ldap_server_username.setDisabled(False)
+            self.ldap_server_username_pwd.setDisabled(False)
+            self.ldap_checkControlButton.setDisabled(False)
+
+    def ad_change_state(self):
+        if self.adSelectionBox.isChecked() is True:
+            self.ad_host_label.setVisible(True)
+            self.ad_host.setVisible(True)
+            self.ad_hostname_label.setVisible(True)
+            self.ad_hostname.setVisible(True)
+            self.ad_domain_name_label.setVisible(True)
+            self.ad_domain_name.setVisible(True)
+            self.ad_username_label.setVisible(True)
+            self.ad_username.setVisible(True)
+            self.ad_user_pwd_label.setVisible(True)
+            self.ad_user_pwd.setVisible(True)
+            self.ad_port_label.setVisible(True)
+            self.ad_port.setVisible(True)
+        else:
+            self.ad_conf_set_visible()
+
+    def ad_conf_set_visible(self):
+        self.ad_host_label.setVisible(False)
+        self.ad_host.setVisible(False)
+        self.ad_hostname_label.setVisible(False)
+        self.ad_hostname.setVisible(False)
+        self.ad_domain_name_label.setVisible(False)
+        self.ad_domain_name.setVisible(False)
+        self.ad_username_label.setVisible(False)
+        self.ad_username.setVisible(False)
+        self.ad_user_pwd_label.setVisible(False)
+        self.ad_user_pwd.setVisible(False)
+        self.ad_port_label.setVisible(False)
+        self.ad_port.setVisible(False)
+
+    def main_repo(self):
         if self.repoMainBox.isChecked() is True:
             self.repo_type = "main"
             self.repoTestBox.setChecked(False)
-
-            if self.util.is_exist(self.server_list_path):
-                with open(self.server_list_path) as f:
+            if self.util.is_exist(self.liderahenk_params_path):
+                with open(self.liderahenk_params_path) as f:
                     data = json.load(f)
                     self.repo_key.setText(data["repo_key"])
                     if data["repo_type"] == "main":
@@ -171,13 +410,11 @@ class SettingsPage(QWidget):
                 self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
 
     def test_repo(self):
-
         if self.repoTestBox.isChecked() is True:
             self.repo_type = "test"
             self.repoMainBox.setChecked(False)
-
-            if self.util.is_exist(self.server_list_path):
-                with open(self.server_list_path) as f:
+            if self.util.is_exist(self.liderahenk_params_path):
+                with open(self.liderahenk_params_path) as f:
                     data = json.load(f)
                     self.repo_key.setText(data["repo_key"])
                     if data["repo_type"] == "test":
@@ -188,203 +425,197 @@ class SettingsPage(QWidget):
             else:
                 self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk-test testing main")
 
-    def standart_selection(self):
+    def get_params(self):
+        lider_install = False
+        if self.liderCheckBox.isChecked():
+            lider_install = True
 
-        if self.standartSelectionBox.isChecked() is True:
-            self.advancedSelectionBox.setChecked(False)
-            # self.serverSelectionCombo.setDisabled(True)
-            self.serverSelectionCombo.setVisible(False)
-            self.serverSelectionLabel.setVisible(False)
-            self.serverlistGroup.setVisible(False)
-            self.addButton.setVisible(False)
-            self.saveButton.setEnabled(True)
+        ldap_install = False
+        if self.ldapCheckBox.isChecked():
+            ldap_install = True
 
-    def advanced_selection(self):
+        db_install = False
+        if self.databaseCheckBox.isChecked():
+            db_install = True
 
-        if self.advancedSelectionBox.isChecked() is True:
-            self.standartSelectionBox.setChecked(False)
-            # self.serverSelectionCombo.setEnabled(True)
-            self.serverSelectionCombo.setVisible(True)
-            self.serverSelectionLabel.setVisible(True)
-            self.serverlistGroup.setVisible(True)
-            self.addButton.setVisible(True)
-
-            if self.tableWidget.rowCount() == 4:
-                self.saveButton.setEnabled(True)
-            else:
-                self.saveButton.setDisabled(True)
-
-    def add_server(self):
-
-        if self.advancedSelectionBox.isChecked() is True:
-            server_name = self.serverSelectionCombo.currentText()
-            server_index = self.serverSelectionCombo.currentIndex()
-            if server_index != self.serverSelectionCombo.count() - 1:
-                self.serverSelectionCombo.setCurrentIndex(server_index + 1)
-            ip = self.server_ip.text()
-            username = self.username.text()
-            password = self.password.text()
-            server_status = self.check_server(server_name)
-            # location = self.serverCombo.currentText()
-            if server_status is False:
-                if ip is "" or username is "" or password is "":
-                    self.msg_box.warning("Lütfen Sunucu adresini, kullanıcı adını ve kullanıcı parolası giriniz!")
-                else:
-                    rowPosition = self.tableWidget.rowCount()
-                    self.tableWidget.insertRow(rowPosition)
-                    numcols = self.tableWidget.columnCount()
-                    numrows = self.tableWidget.rowCount()
-                    self.tableWidget.setRowCount(numrows)
-                    self.tableWidget.setAlternatingRowColors(True)
-                    self.tableWidget.setColumnCount(numcols)
-                    self.tableWidget.setItem(numrows - 1, 0, QTableWidgetItem(server_name))
-                    self.tableWidget.setItem(numrows - 1, 1, QTableWidgetItem(ip))
-                    self.tableWidget.setItem(numrows - 1, 2, QTableWidgetItem(username))
-                    self.tableWidget.setItem(numrows - 1, 3, QTableWidgetItem("*" * len(password)))
-
-                    self.delButton = QPushButton(self.tableWidget)
-                    self.delButton.setText('Sil')
-                    self.delButton.clicked.connect(self.del_server)
-                    self.tableWidget.setCellWidget(numrows - 1, 4, self.delButton)
-                    self.tableWidget.selectRow(numrows - 1)
-
-                    if self.tableWidget.rowCount() == 4:
-                        self.saveButton.setEnabled(True)
-                    else:
-                        self.saveButton.setDisabled(True)
-            else:
-                self.msg_box.warning("Kayıt zaten var")
-
-    def check_server(self, server_name):
-
-        row_count = self.tableWidget.rowCount()
-        server_list = []
-        if row_count != 0:
-            for row in range(row_count):
-                server_item = self.tableWidget.item(row, 0)
-                server_name_1 = server_item.text()
-                server_list.append(server_name_1)
-            # check if server name exist in a list return True
-            if server_name in server_list:
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def del_server(self):
-
-        rows = sorted(set(index.row() for index in
-        self.tableWidget.selectedIndexes()))
-        for row in rows:
-            self.tableWidget.selectRow(row)
-            self.tableWidget.removeRow(self.tableWidget.currentRow())
-            self.msg_box.information("Kayıt Silindi")
-            self.tableWidget.selectRow(row - 1)
-
-        if self.tableWidget.rowCount() != 4:
-            self.saveButton.setDisabled(True)
-
-    def save_settings(self):
+        ejabberd_install = False
+        if self.ejabberdCheckBox.isChecked():
+            ejabberd_install = True
 
         repo_key = self.repo_key.text()
         repo_addr = self.repo_addr.text()
+        l_org_name = self.ldap_base_dn.text().split('.')
+        l_org_name = l_org_name[0]
 
-        ## if selection advanced installation
-        if self.advancedSelectionBox.isChecked() is True:
-            if self.tableWidget.rowCount() == 4:
-                self.server_list = {}
-                self.repo_data = {
-                    'repo_key': repo_key,
-                    'repo_addr': repo_addr,
-                    'repo_type': self.repo_type
-                }
-                ## get item from server list table
-                row_count = self.tableWidget.rowCount()
-                if row_count != 0:
+        all_components = False
+        if self.allComponentChekbox.isChecked():
+            all_components = True
+            self.ldap_server_addr.setText(self.db_server_addr.text())
+            self.ldap_server_username.setText(self.db_server_username.text())
+            self.ldap_server_username_pwd.setText(self.db_server_username_pwd.text())
+            self.ejabberd_server_addr.setText(self.db_server_addr.text())
+            self.ejabberd_server_username.setText(self.db_server_username.text())
+            self.ejabberd_server_username_pwd.setText(self.db_server_username_pwd.text())
+            self.lider_server_addr.setText(self.db_server_addr.text())
+            self.lider_server_username.setText(self.db_server_username.text())
+            self.lider_server_username_pwd.setText(self.db_server_username_pwd.text())
 
-                    for row in range(row_count):
+        params = {
+            'all_components': all_components,
+            # Database Configuration
+            'db_install': db_install,
+            'db_server_addr': self.db_server_addr.text(),
+            'db_server_username': self.db_server_username.text(),
+            'db_server_username_pwd': self.db_server_username_pwd.text(),
+            'db_name': "lidermysdb",
+            'db_username': "root",
+            'db_password': self.ldap_admin_pwd.text(),
 
-                        server_name_item = self.tableWidget.item(row, 0)
-                        server_name = server_name_item.text()
+            # Ejabberd Configuration
+            'ejabberd_install': ejabberd_install,
+            'ejabberd_server_addr': self.ejabberd_server_addr.text(),
+            'ejabberd_server_username': self.ejabberd_server_username.text(),
+            'ejabberd_server_username_pwd': self.ejabberd_server_username_pwd.text(),
+            'e_service_name': "im.liderahenk.org",
+            'e_hosts': self.ejabberd_server_addr.text(),
+            'lider_username': 'lider_sunucu',
+            'lider_user_pwd': self.ldap_admin_pwd.text(),
+            'e_username': 'admin',
+            'e_user_pwd': self.ldap_admin_pwd.text(),
 
-                        ip_item = self.tableWidget.item(row, 1)
-                        ip = ip_item.text()
+            # OpenLDAP Configuration
+            'ldap_install': ldap_install,
+            'ldap_server_addr': self.ldap_server_addr.text(),
+            'ldap_server_username': self.ldap_server_username.text(),
+            'ldap_server_username_pwd': self.ldap_server_username_pwd.text(),
+            'l_base_dn': self.ldap_base_dn.text(),
+            'l_admin_cn': "admin",
+            'l_admin_pwd': self.ldap_admin_pwd.text(),
+            'ldap_servers': self.ldap_server_addr.text(),
+            'l_config_pwd': self.ldap_admin_pwd.text(),
+            'l_org_name': l_org_name,
+            'l_config_admin_dn': "cn=admin,cn=config",
+            'ladmin_user': self.ladmin_user.text(),
+            'ladmin_pwd': self.ldap_admin_pwd.text(),
+            'ldap_status': 'new',
 
-                        username_item = self.tableWidget.item(row, 2)
-                        username = username_item.text()
+            # AD Configuration
+            'ad_host': self.ad_host.text(),
+            'ad_hostname': self.ad_hostname.text(),
+            'ad_domain_name': self.ad_domain_name.text(),
+            'ad_username': self.ad_username.text(),
+            'ad_user_pwd': self.ad_user_pwd.text(),
+            'ad_port': self.ad_port.text(),
 
-                        password_item = self.tableWidget.item(row, 3)
-                        password = password_item.text()
+            # File Server Configuration
+            'lider_install': lider_install,
+            'lider_server_addr': self.lider_server_addr.text(),
+            'lider_server_username': self.lider_server_username.text(),
+            'lider_server_username_pwd': self.lider_server_username_pwd.text(),
+            'file_server': self.lider_server_addr.text(),
+            'fs_username': self.lider_server_username.text(),
+            'fs_username_pwd': self.lider_server_username_pwd.text(),
+            'fs_plugin_path': '/home/{username}'.format(username=self.lider_server_username.text()),
+            'fs_agreement_path': '/home/{username}'.format(username=self.lider_server_username.text()),
+            'fs_agent_file_path': '/home/{username}'.format(username=self.lider_server_username.text()),
 
-                        self.data = {
-                            server_name: [
-                                {
-                                'location': "remote",
-                                'ip': ip,
-                                'username': username,
-                                'password': password,
-                                'server_name': server_name
-                                }
-                            ]
-                        }
-                        self.server_list.update(self.data)
-                    self.server_list.update(self.repo_data)
-                    self.server_list.update({'selection': "advanced"})
+            # repository parameters
+            'repo_type': self.repo_type,
+            'repo_key': repo_key,
+            'repo_addr': repo_addr,
+        }
 
-                    with open(self.server_list_path, 'w') as f:
-                        json.dump(self.server_list, f, ensure_ascii=False)
-                    self.msg_box.information("Ayarlar kaydedildi.")
+        if self.databaseCheckBox.isChecked() or self.ldapCheckBox.isChecked() or self.ejabberdCheckBox.isChecked() or self.liderCheckBox.isChecked():
+            if self.allComponentChekbox.isChecked() is not True:
+                if self.databaseCheckBox.isChecked():
+                    if self.db_server_addr.text() == "" or self.db_server_username.text() == "" or self.db_server_username_pwd.text() == "":
+                        self.msg_box.information("Veritabanı sunucu erişim bilgilerini eksiksiz giriniz.")
+                        return
+                    else:
+                        if self.ldap_server_addr.text() == "" or self.ejabberd_server_addr.text() == "" or self.lider_server_addr.text() == "":
+                            self.msg_box.information("Veritabanı konfigürasyonu için OpenLDAP, Ejabberd ve Lider sunucu adresleri girilmelidir.")
+                            return
+
+                if self.ldapCheckBox.isChecked():
+                    if self.ldap_server_addr.text() == "" or self.ldap_server_username.text() == "" or self.ldap_server_username_pwd.text() == "":
+                        self.msg_box.information("OpenLDAP sunucu erişim bilgilerini eksiksiz giriniz.")
+                        return
+
+                if self.ejabberdCheckBox.isChecked():
+                    if self.ejabberd_server_addr.text() == "" or self.ejabberd_server_username.text() == "" or self.ejabberd_server_username_pwd.text() == "":
+                        self.msg_box.information("Ejabberd sunucu erişim bilgilerini eksiksiz giriniz.")
+                        return
+                    else:
+                        if self.ldap_server_addr.text() == "":
+                            self.msg_box.information("Ejabberd konfigürasyonu için OpenLDAP sunucu adresi girilmelidir.")
+                            return
+
+                if self.liderCheckBox.isChecked():
+                    if self.lider_server_addr.text() == "" or self.lider_server_username.text() == "" or self.lider_server_username_pwd.text() == "":
+                        self.msg_box.information("Lider sunucu erişim bilgilerini eksiksiz giriniz.")
+                        return
+                    else:
+                        if self.db_server_addr.text() == "":
+                            self.msg_box.information("Lider konfigürasyonu için Veritabanı sunucu adresi girilmelidir.")
+                            return
             else:
-                self.msg_box.information("Lütfen Lider Ahenk bileşenlerine ait bağlantı bilgilerini giriniz.")
+                if self.db_server_addr.text() == "" or self.db_server_username.text() == "" or self.db_server_username_pwd.text() == "":
+                    self.msg_box.information("Lütfen sunucu erişim bilgilerini eksiksiz giriniz")
+                    return
 
-        ## if selection standart installation
-        if self.standartSelectionBox.isChecked() is True:
-            ip = self.server_ip.text()
-            username = self.username.text()
-            password = self.password.text()
-
-            self.data = {
-                'location': "remote",
-                'selection': "standart",
-                'ip': ip,
-                'username': username,
-                'password': password,
-                'server_name': "all",
-                'repo_key': repo_key,
-                'repo_addr': repo_addr,
-                'repo_type': self.repo_type
-            }
-
-            if ip is "" or username is "" or password is "":
-                self.msg_box.warning("Lütfen Sunucu adresini, kullanıcı adını ve kullanıcı parolası giriniz!")
+            if self.ldap_base_dn.text() == "" or self.ldap_admin_pwd.text() == "" or self.ladmin_user.text() == "" or self.ladmin_pwd.text() == "" :
+                self.msg_box.information("Lider Ahenk konfigürasyonu için tüm alanları doldurunuz.")
             else:
-                with open(self.server_list_path, 'w') as f:
-                    json.dump(self.data, f, ensure_ascii=False)
-                self.msg_box.information("Ayarlar kaydedildi ve tüm Lider Ahenk Sunucu\n"
-                                         "bileşenşeri tek bir sunucuya kurulacaktır.")
+                install = self.msg_box.install_confirm("Lider Ahenk sunucu kurulumuna başlanacak. Devam etmek istiyor musunuz?")
+                if install is True:
+                    with open(self.liderahenk_params_path, 'w') as f:
+                        json.dump(params, f, ensure_ascii=False)
 
-    def check_control_button(self, idx):
-
-        ## if select location is remote server
-        if idx == 0:
-            self.server_ip.setText("")
+                    self.install_status.setText("Lider Ahenk kurulumu devam ediyor")
+                    self.install_status.setStyleSheet("background-color: green")
+                    self.lider_page.lider_ahenk_install(params)
+                    self.msg_box.information("Lider Ahenk kurulumu tamamlandı.")
+                    self.install_status.setText("Lider Ahenk kurulumu tamamlandı")
+                    self.install_status.setStyleSheet("background-color: cyan")
+                else:
+                    self.msg_box.information("Lider Ahenk sunucusu kurulmayacak")
         else:
-            self.server_ip.setText("127.0.0.1")
+            self.msg_box.information("Lütfen kuruluma başlamak için en bir tane bileşen seçiniz.")
 
-    def ssh_control(self):
+    def ssh_control(self, server):
+        ip = None
+        username = None
+        password = None
+
+        if server == "db":
+            ip = self.db_server_addr.text()
+            username = self.db_server_username.text()
+            password = self.db_server_username_pwd.text()
+
+        if server == "ldap":
+            ip = self.ldap_server_addr.text()
+            username = self.ldap_server_username.text()
+            password = self.ldap_server_username_pwd.text()
+
+        if server == "ejabberd":
+            ip = self.ejabberd_server_addr.text()
+            username = self.ejabberd_server_username.text()
+            password = self.ejabberd_server_username_pwd.text()
+
+        if server == "lider":
+            ip = self.lider_server_addr.text()
+            username = self.lider_server_username.text()
+            password = self.lider_server_username_pwd.text()
 
         data = {
             'location': "remote",
             # Server Configuration
-            'ip': self.server_ip.text(),
-            'username': self.username.text(),
-            'password': self.password.text(),
+            'ip': ip,
+            'username': username,
+            'password': password,
         }
-
         if data["ip"] == "" or data["username"] == "" or data["password"] == "":
             self.msg_box.warning("Lütfen sunucu adresini, kullanıcı adını ve parolasını giriniz!")
-
         else:
             ssh_status = self.im.ssh_connect(data)
             if ssh_status is True:
@@ -393,11 +624,9 @@ class SettingsPage(QWidget):
                 msg = "Bağlantı Sağlanamadı. Bağlantı Ayarlarını Kontrol Ederek Daha Sonra Tekrar Deneyiniz!\n"
                 self.msg_box.information(msg)
 
-
     def get_server_settings(self):
-
-        if self.util.is_exist(self.server_list_path):
-            with open(self.server_list_path) as f:
+        if self.util.is_exist(self.liderahenk_params_path):
+            with open(self.liderahenk_params_path) as f:
                 data = json.load(f)
                 self.repo_key.setText(data["repo_key"])
                 if data["repo_type"] == "main":
@@ -409,35 +638,52 @@ class SettingsPage(QWidget):
                     self.repoMainBox.setChecked(False)
                     self.repo_addr.setText(data["repo_addr"])
 
-                if data["selection"] == "standart":
-                    self.standartSelectionBox.setChecked(True)
-                    self.server_ip.setText(data["ip"])
-                    self.username.setText(data["username"])
-                    self.password.setText(data["password"])
+                if data["all_components"] is True:
+                    self.allComponentChekbox.setChecked(True)
+
+                if data["lider_install"] is True:
+                    self.liderCheckBox.setChecked(True)
                 else:
-                    self.advancedSelectionBox.setChecked(True)
+                    self.liderCheckBox.setChecked(False)
 
-                    servers = "Veritabanı", "OpenLDAP", "XMPP", "Lider"
-                    for i in servers:
-                        rowPosition = self.tableWidget.rowCount()
-                        self.tableWidget.insertRow(rowPosition)
-                        numcols = self.tableWidget.columnCount()
-                        numrows = self.tableWidget.rowCount()
-                        self.tableWidget.setRowCount(numrows)
-                        self.tableWidget.setAlternatingRowColors(True)
-                        self.tableWidget.setColumnCount(numcols)
-                        self.tableWidget.setItem(numrows - 1, 0, QTableWidgetItem(i))
-                        self.tableWidget.setItem(numrows - 1, 1, QTableWidgetItem(data[i][0]["ip"]))
-                        self.tableWidget.setItem(numrows - 1, 2, QTableWidgetItem(data[i][0]["username"]))
-                        self.tableWidget.setItem(numrows - 1, 3, QTableWidgetItem(data[i][0]["password"]))
+                if data["ldap_install"] is True:
+                    self.ldapCheckBox.setChecked(True)
+                else:
+                    self.ldapCheckBox.setChecked(False)
 
-                        self.delButton = QPushButton(self.tableWidget)
-                        self.delButton.setText('Sil')
-                        self.delButton.clicked.connect(self.del_server)
-                        self.tableWidget.setCellWidget(numrows - 1, 4, self.delButton)
-                        self.tableWidget.selectRow(numrows - 1)
+                if data["ejabberd_install"] is True:
+                    self.ejabberdCheckBox.setChecked(True)
+                else:
+                    self.ejabberdCheckBox.setChecked(False)
 
-                        if self.tableWidget.rowCount() == 4:
-                            self.saveButton.setEnabled(True)
-                        else:
-                            self.saveButton.setDisabled(True)
+                if data["db_install"] is True:
+                    self.databaseCheckBox.setChecked(True)
+                else:
+                    self.databaseCheckBox.setChecked(False)
+
+                self.db_server_addr.setText(data["db_server_addr"])
+                self.db_server_username.setText(data["db_server_username"])
+                self.db_server_username_pwd.setText(data["db_server_username_pwd"])
+
+                self.ldap_server_addr.setText(data["ldap_server_addr"])
+                self.ldap_server_username.setText(data["ldap_server_username"])
+                self.ldap_server_username_pwd.setText(data["ldap_server_username_pwd"])
+
+                self.ejabberd_server_addr.setText(data["ejabberd_server_addr"])
+                self.ejabberd_server_username.setText(data["ejabberd_server_username"])
+                self.ejabberd_server_username_pwd.setText(data["ejabberd_server_username_pwd"])
+
+                self.lider_server_addr.setText(data["lider_server_addr"])
+                self.lider_server_username.setText(data["lider_server_username"])
+                self.lider_server_username_pwd.setText(data["lider_server_username_pwd"])
+
+                self.ldap_base_dn.setText(data["l_base_dn"])
+                self.ldap_admin_pwd.setText(data["l_admin_pwd"])
+                self.ladmin_user.setText(data["ladmin_user"])
+                self.ladmin_pwd.setText(data["l_admin_pwd"])
+                self.ad_host.setText(data["ad_host"])
+                self.ad_hostname.setText(data["ad_hostname"])
+                self.ad_domain_name.setText(data["ad_domain_name"])
+                self.ad_username.setText(data["ad_username"])
+                self.ad_user_pwd.setText(data["ad_user_pwd"])
+                self.ad_port.setText(data["ad_port"])

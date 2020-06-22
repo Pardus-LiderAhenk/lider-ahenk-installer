@@ -16,13 +16,10 @@ class Util(object):
         self.ssh = None
         self.ip = {}
         self.password = None
-        self.location = None
         self.logger = Logger()
 
     def connect(self, data):
         self.password = data['password']
-        self.location = data['location']
-
         try:
             self.ssh = paramiko.SSHClient()
             self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -41,64 +38,68 @@ class Util(object):
         self.logger.info("Bağlantı kapatıldı")
 
     def run_command(self, command):
-        if self.location == 'remote':
-            # run command with sudo user
-            try:
-                # print(command)
-                stdin, stdout, stderr = self.ssh.exec_command(command, get_pty=True)
-                stdin.write(self.password + '\n')
-                stdin.flush()
-                # Wait for the command to terminate
-                while not stdout.channel.exit_status_ready():
-                    # Only print data if there is data to read in the channel
-                    if stdout.channel.recv_ready():
-                        rl, wl, xl = select.select([stdout.channel], [], [], 0.0)
-                        if len(rl) > 0:
-                            # Print data from stdout
-                            print(stdout.channel.recv(1024))
-                result_code = stdout.channel.recv_exit_status()
-                self.logger.info(str(command) + " komutu çalıştırıldı")
-                return result_code
+        # run command with sudo user
+        try:
+            # print(command)
+            stdin, stdout, stderr = self.ssh.exec_command(command, get_pty=True)
+            stdin.write(self.password + '\n')
+            stdin.flush()
+            # Wait for the command to terminate
+            while not stdout.channel.exit_status_ready():
+                # Only print data if there is data to read in the channel
+                if stdout.channel.recv_ready():
+                    rl, wl, xl = select.select([stdout.channel], [], [], 0.0)
+                    if len(rl) > 0:
+                        # Print data from stdout
+                        print(stdout.channel.recv(1024))
+            result_code = stdout.channel.recv_exit_status()
+            self.logger.info(str(command) + " komutu çalıştırıldı")
+            return result_code
 
-            except Exception as e:
-                self.logger.error(str(command) + " komutu çalıştırılırken hata oluştu! " + str(e))
-        # if location local server
-        else:
-            try:
-                echo = subprocess.Popen(['echo', self.password], stdout=subprocess.PIPE,)
+        except Exception as e:
+            self.logger.error(str(command) + " komutu çalıştırılırken hata oluştu! " + str(e))
 
-                sudo = subprocess.Popen(['sudo', '-S', 'su'], stdin=echo.stdout, stdout=subprocess.PIPE)
 
-                process = subprocess.Popen(command, stdin=None, env=None, cwd=None, stderr=subprocess.PIPE,
-                                           stdout=subprocess.PIPE, shell=True)
-                result_code = process.wait()
-                p_out = process.stdout.read().decode("unicode_escape")
-                p_err = process.stderr.read().decode("unicode_escape")
+    def run_command_local(self, command):
+        try:
+            echo = subprocess.Popen(['echo', self.password], stdout=subprocess.PIPE, )
 
-                if result_code == 0:
-                    self.logger.info(str(command) + " komutu başarıyla çalıştırıldı")
-                else:
-                    self.logger.error(str(command) + " komutu çalıştırılırken hata oluştu! " + str(p_err))
-                return result_code
-            except Exception as e:
-                self.logger.error(str(command) + " komutu çalıştırılırken hata oluştu! " + str(e))
+            sudo = subprocess.Popen(['sudo', '-S', 'su'], stdin=echo.stdout, stdout=subprocess.PIPE)
+
+            process = subprocess.Popen(command, stdin=None, env=None, cwd=None, stderr=subprocess.PIPE,
+                                       stdout=subprocess.PIPE, shell=True)
+            result_code = process.wait()
+            p_out = process.stdout.read().decode("unicode_escape")
+            p_err = process.stderr.read().decode("unicode_escape")
+
+            if result_code == 0:
+                self.logger.info(str(command) + " komutu başarıyla çalıştırıldı")
+            else:
+                self.logger.error(str(command) + " komutu çalıştırılırken hata oluştu! " + str(p_err))
+            return result_code
+        except Exception as e:
+            self.logger.error(str(command) + " komutu çalıştırılırken hata oluştu! " + str(e))
+
 
     # copy file to remote server with SCPClient method
     def scp_file(self, src_path, des_path):
-        if self.location == 'remote':
-            try:
-                self.scp = SCPClient(self.ssh.get_transport())
-                self.scp.put(src_path, recursive=True, remote_path=des_path)
-                self.logger.info(str(src_path) + " kaynağının " + str(des_path) + " hedefine başarıyla kopyalandı")
-            except Exception as e:
-                self.logger.error(str(src_path) + " kaynağının " + str(des_path) + " hedefine kopyalanması sırasında hata oluştu! \n" + str(e))
-        else:
-            ### copf file to local
-            try:
-                shutil.copy2(str(src_path), str(des_path))
-                self.logger.info(str(src_path) + " kaynağının " + str(des_path) + " hedefine başarıyla kopyalandı")
-            except Exception as e:
-                self.logger.error("kopyalama yaparken beklenmedik hata oluştu" + str(e))
+
+        try:
+            self.scp = SCPClient(self.ssh.get_transport())
+            self.scp.put(src_path, recursive=True, remote_path=des_path)
+            self.logger.info(str(src_path) + " kaynağının " + str(des_path) + " hedefine başarıyla kopyalandı")
+        except Exception as e:
+            self.logger.error(str(src_path) + " kaynağının " + str(
+                des_path) + " hedefine kopyalanması sırasında hata oluştu! \n" + str(e))
+
+
+    def copy_file(self, src_path, des_path):
+        ### copf file to local
+        try:
+            shutil.copy2(str(src_path), str(des_path))
+            self.logger.info(str(src_path) + " kaynağının " + str(des_path) + " hedefine başarıyla kopyalandı")
+        except Exception as e:
+            self.logger.error("kopyalama yaparken beklenmedik hata oluştu" + str(e))
 
     def create_directory_local(self, dir_path):
         try:
@@ -125,3 +126,11 @@ class Util(object):
             return os.path.exists(full_path)
         except:
             raise
+
+    def read_file_by_line(self, full_path, mode='r'):
+        line_list = list()
+        with open(full_path, mode) as f:
+            lines = f.readlines()
+            for line in lines:
+                line_list.append(line)
+        return line_list

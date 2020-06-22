@@ -13,3 +13,4 @@
    <file>images/lider_console.png</file>
 </qresource>
 </RCC>
+<!--pyrcc5 -o configdialog_rc.py configdialog.qrc-->
