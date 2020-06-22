@@ -640,6 +640,8 @@ class SettingsPage(QWidget):
 
                 if data["all_components"] is True:
                     self.allComponentChekbox.setChecked(True)
+                else:
+                    self.allComponentChekbox.setChecked(False)
 
                 if data["lider_install"] is True:
                     self.liderCheckBox.setChecked(True)

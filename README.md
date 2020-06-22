@@ -5,7 +5,7 @@
 Uçbirimde aşağıdaki komutlar sırasıyla yazılır.
 
 ````
-sudo apt-get install python3-paramiko python3-pyqt5 xterm maven
+sudo apt-get install python3-paramiko python3-pyqt5 python3-mysql.connector python3-psutil python3-wget xterm maven 
 ````
 
 
