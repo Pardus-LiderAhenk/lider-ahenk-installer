@@ -4,6 +4,7 @@
 
 import json
 import os
+
 from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTableWidget,
                              QTableWidgetItem, QComboBox, QCheckBox)
 from install_manager import InstallManager
@@ -177,6 +178,9 @@ class SettingsPage(QWidget):
         self.ad_user_pwd = QLineEdit()
         self.ad_user_pwd.setPlaceholderText("****")
         self.ad_user_pwd.setEchoMode(QLineEdit.Password)
+        self.ad_user_dn_label = QLabel("AD Kullanıcı DN Bilgisi:")
+        self.ad_user_dn = QLineEdit()
+        self.ad_user_dn.setPlaceholderText("cn=Administrator,cn=Users,dc=ad,dc=liderahenk,dc=org")
         self.ad_port_label = QLabel("AD Port:")
         self.ad_port = QLineEdit()
         self.ad_port.setPlaceholderText("389")
@@ -205,8 +209,10 @@ class SettingsPage(QWidget):
         self.configLayout.addWidget(self.ad_username, 8, 1)
         self.configLayout.addWidget(self.ad_user_pwd_label, 9, 0)
         self.configLayout.addWidget(self.ad_user_pwd, 9, 1)
-        self.configLayout.addWidget(self.ad_port_label, 10, 0)
-        self.configLayout.addWidget(self.ad_port, 10, 1)
+        self.configLayout.addWidget(self.ad_user_dn_label, 10, 0)
+        self.configLayout.addWidget(self.ad_user_dn, 10, 1)
+        self.configLayout.addWidget(self.ad_port_label, 11, 0)
+        self.configLayout.addWidget(self.ad_port, 11, 1)
         self.configGroup.setLayout(self.configLayout)
 
         self.adSelectionBox.stateChanged.connect(self.ad_change_state)
@@ -376,6 +382,8 @@ class SettingsPage(QWidget):
             self.ad_user_pwd.setVisible(True)
             self.ad_port_label.setVisible(True)
             self.ad_port.setVisible(True)
+            self.ad_user_dn.setVisible(True)
+            self.ad_user_dn_label.setVisible(True)
         else:
             self.ad_conf_set_visible()
 
@@ -392,6 +400,8 @@ class SettingsPage(QWidget):
         self.ad_user_pwd.setVisible(False)
         self.ad_port_label.setVisible(False)
         self.ad_port.setVisible(False)
+        self.ad_user_dn.setVisible(False)
+        self.ad_user_dn_label.setVisible(False)
 
     def main_repo(self):
         if self.repoMainBox.isChecked() is True:
@@ -506,6 +516,7 @@ class SettingsPage(QWidget):
             'ad_username': self.ad_username.text(),
             'ad_user_pwd': self.ad_user_pwd.text(),
             'ad_port': self.ad_port.text(),
+            'ad_user_dn': self.ad_user_dn.text(),
 
             # File Server Configuration
             'lider_install': lider_install,
@@ -689,3 +700,4 @@ class SettingsPage(QWidget):
                 self.ad_username.setText(data["ad_username"])
                 self.ad_user_pwd.setText(data["ad_user_pwd"])
                 self.ad_port.setText(data["ad_port"])
+                self.ad_user_dn.setText(data["ad_user_dn"])

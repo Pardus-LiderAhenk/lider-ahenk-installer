@@ -128,6 +128,7 @@ class MariaDbInstaller(object):
         "adHostName": self.data['ad_hostname'],
         "adIpAddress": self.data['ad_host'],
         "adPort": self.data['ad_port'],
+        "adAdminUserFullDN": self.data['ad_user_dn'],
         "agentLdapBaseDn": "ou=Agents,{0}".format(self.base_dn_parse()),
         "agentLdapIdAttribute": "cn",
         "agentLdapJidAttribute": "uid",

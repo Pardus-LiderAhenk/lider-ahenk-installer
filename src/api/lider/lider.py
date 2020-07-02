@@ -8,10 +8,6 @@ import shutil
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 from api.util.util import Util
-import wget
-import tarfile
-from shutil import copyfile
-import subprocess
 
 class LiderInstaller(object):
 
@@ -26,15 +22,12 @@ class LiderInstaller(object):
         self.lider_conf_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/tr.org.liderahenk.cfg')
         self.db_conf_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/tr.org.liderahenk.datasource.cfg')
         self.tomcat_service_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/tomcat.service')
-        self.application_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/application.properties')
-        self.application_properties_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/application.properties')
-        self.lider_build_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/build.sh')
-        self.lider_tar_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2.tar.gz')
-        self.lider_web_url = "http://liderahenk.org/downloads/liderv2.tar.gz"
-        self.lider_war_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2/target/ROOT.war')
-        self.liderv2_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2')
+        self.application_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/lider.properties')
+        self.application_properties_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/lider.properties')
+        self.lider_web_url = "http://liderahenk.org/downloads/ROOT.war"
+        self.tomcat_tar_file = "http://liderahenk.org/downloads/apache-tomcat-9.0.36.tar.gz"
         self.dist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')
-        self.liderv2_app_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2/src/main/resources/application.properties')
+        self.liderv2_app_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2/src/main/resources/lider.properties')
 
     def install(self, data):
         repo_key = data["repo_key"]
@@ -78,8 +71,7 @@ class LiderInstaller(object):
             result_code = self.ssh_api.run_command("sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat")
             if result_code == 0:
                 self.logger.info("tomcat kullanıcısı oluşturuldu ve ev dizini ayarlandı.")
-            result_code = self.ssh_api.run_command("wget http://liderahenk.org/downloads/apache-tomcat-9.0.36.tar.gz")
-
+            result_code = self.ssh_api.run_command("wget {0}".format(self.tomcat_tar_file))
             if result_code == 0:
                 self.logger.info("tomcat başarıyla indirildi.")
             else:
@@ -97,36 +89,18 @@ class LiderInstaller(object):
             result_code = self.ssh_api.run_command("sudo systemctl enable tomcat")
             result_code = self.ssh_api.run_command("sudo systemctl start tomcat")
             self.logger.info("tomcat konfigürastonu tamamlandı")
-            # # git clone liderv2 project
-            # self.ssh_api.run_command("wget {0}".format(self.lider_web_url))
-            # self.ssh_api.run_command("wget {0}".format(self.lider_web_url))
-            if os.path.isfile(self.lider_tar_path):
-                os.remove(self.lider_tar_path)
-            wget.download(str(self.lider_web_url), self.lider_tar_path)
-            if os.path.isdir(self.liderv2_path):
-                shutil.rmtree(self.liderv2_path)
-            lider_tar = tarfile.open(self.lider_tar_path)
-            lider_tar.extractall(self.dist_path)
-            lider_tar.close()
-            copyfile(self.application_properties_out_path, self.liderv2_app_properties_path)
-            copyfile(self.lider_build_script, self.liderv2_path+"/build.sh")
-            self.logger.info("Lider build ediliyor....")
-            try:
-                process = subprocess.Popen("mvn clean package", stdin=None, env=None, cwd=self.liderv2_path, stderr=subprocess.PIPE,
-                                           stdout=subprocess.PIPE, shell=True)
-                result_code = process.wait()
-                p_out = process.stdout.read().decode("unicode_escape")
-                p_err = process.stderr.read().decode("unicode_escape")
-                self.logger.info("Lider başarıyla build edildi.")
-            except Exception as e:
-                self.logger.error("Lider build edilirken hata oluştu. HATA: {0}".format(str(e)))
-            # self.ssh_api.run_command("tar xf liderv2.tar.gz -C /home/{0}/".format(data["username"]))
-            # self.ssh_api.run_command("sudo apt-get install maven -y")
-            self.ssh_api.scp_file(self.lider_war_path, '/tmp')
-            self.ssh_api.run_command("sudo cp /tmp/ROOT.war /opt/tomcat/webapps/")
-            # self.ssh_api.scp_file(self.application_properties_out_path, '/home/{0}/liderv2/src/main/resources'.format(data['username']))
-            # self.ssh_api.scp_file(self.lider_build_script, '/home/{0}/liderv2/'.format(data['username']))
-            # result_code = self.ssh_api.run_command("/bin/bash /home/{0}/liderv2/build.sh".format(data['username']))
+            self.ssh_api.scp_file(self.application_properties_out_path, '/tmp')
+            result_code = self.ssh_api.run_command("sudo mkdir -p /etc/lider")
+            result_code = self.ssh_api.run_command("sudo cp /tmp/lider.properties /etc/lider/")
+            result_code = self.ssh_api.run_command("wget {0}".format(self.lider_web_url))
+            if result_code == 0:
+                self.logger.info("ROOT.war başarıyla indirildi.")
+            else:
+                self.logger.error("ROOT.war indirilirken hata oluştu")
+            result_code = self.ssh_api.run_command("sudo cp ROOT.war /opt/tomcat/webapps/")
+            result_code = self.ssh_api.run_command("sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war")
+            # result_code = self.ssh_api.run_command("sudo systemctl restart tomcat.service")
+
             result_code = self.ssh_api.run_command("sudo apt-get install guacd -y")
             if result_code == 0:
                 self.logger.info("Uzak masaüstü sunucusu yapılandırıldı")
@@ -224,3 +198,4 @@ class LiderInstaller(object):
         self.f_db.close()
         self.f_db_out.close()
         self.logger.info("application properties dosyası oluşturuldu")
+

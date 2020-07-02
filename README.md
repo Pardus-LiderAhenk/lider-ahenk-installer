@@ -1,11 +1,13 @@
 # LİDER AHENK UYGULAMASI NASIL KURULUR
 
+##### Not : Lider ahenk sunucusu için Pardus-19.2-SERVER sürümünü kullanınız. Pardus 19.2 sürümünü http://indir.pardus.org.tr/ISO/Pardus19/Pardus-19.2-SERVER-amd64.iso adresinden indirebilirsiniz. Sunucu dilini ingilizce olarak ayarlayınız. 
+
 ## Bağımlılıkların Kurulması
 
 Uçbirimde aşağıdaki komutlar sırasıyla yazılır.
 
 ````
-sudo apt-get install python3-paramiko python3-pyqt5 python3-mysql.connector python3-psutil python3-wget xterm maven 
+sudo apt-get install python3-paramiko python3-pyqt5 python3-mysql.connector python3-psutil xterm maven 
 ````
 
 

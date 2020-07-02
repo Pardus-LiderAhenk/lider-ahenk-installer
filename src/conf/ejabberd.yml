@@ -18,6 +18,7 @@ hosts:
   - "#SERVICE_NAME"
 
 auth_method: ldap
+auth_use_cache: false
 
 ldap_servers:
   - "#LDAP_SERVER"
