@@ -122,7 +122,7 @@ objectClass: pardusLiderAhenkConfig
 liderServiceAddress: http://$LIDER_SERVER_ADDR:8181
 cn: liderAhenkConfig
 
-dn: cn=$LIDERCONSOLEUSER,$BASEDN
+dn: cn=$LIDERCONSOLEUSER,$USERDN
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: pardusAccount
@@ -195,7 +195,7 @@ dn: $ADMINGROUPDN
 objectClass: groupOfNames
 objectClass: top
 member: $ADMINDN
-member: cn=$LIDERCONSOLEUSER,$BASEDN
+member: cn=$LIDERCONSOLEUSER,$USERDN
 cn: adminGroups
 description: User group authorized to write on LDAP
 
