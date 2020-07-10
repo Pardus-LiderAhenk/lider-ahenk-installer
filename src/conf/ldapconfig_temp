@@ -250,24 +250,24 @@ ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcAccess
-#olcAccess: {0}to attrs=userPassword by self write by anonymous auth by * none
-olcAccess: {10}to dn.base="$BASEDN" by * read by * break
-olcAccess: {11}to dn.base="$USERDN" by * read by * break
-olcAccess: {12}to dn.base="$AGENTDN" by * read by * break
-olcAccess: {13}to dn.base="$POLICYGROUPDN" by * read by * break
-olcAccess: {14}to dn.base="$GROUPDN" by * read by * break
-olcAccess: {15}to dn.base="$USERGROUPDN" by * read by * break
-olcAccess: {16}to dn.base="$AGENTGROUPDN" by * read by * break
-olcAccess: {17}to dn.base="$ROLEGROUPDN" by * read by * break
-#olcAccess: {1}to attrs=shadowLastChange by self write by * read
-olcAccess: {2}to dn.subtree="$ROLEGROUPDN" by dn.subtree="$AGENTDN" read by * break
-olcAccess: {3}to dn.subtree="$USERDN" by dn.subtree="$AGENTDN" read by * break
-olcAccess: {4}to dn.subtree="$USERDN" by group.exact="$ADMINGROUPDN" write by * break
-olcAccess: {5}to dn.subtree="$AGENTDN" by group.exact="$ADMINGROUPDN" write by * break
-olcAccess: {6}to dn.subtree="$POLICYGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
-olcAccess: {7}to dn.subtree="$USERGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
-olcAccess: {8}to dn.subtree="$ROLEGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
-olcAccess: {9}to dn.subtree="$AGENTGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
+olcAccess: {0}to attrs=userPassword,shadowLastChange by group.exact="$ADMINGROUPDN" write by anonymous auth by self write
+olcAccess: {9}to dn.base="$BASEDN" by * read by * break
+olcAccess: {10}to dn.base="$USERDN" by * read by * break
+olcAccess: {11}to dn.base="$AGENTDN" by * read by * break
+olcAccess: {12}to dn.base="$POLICYGROUPDN" by * read by * break
+olcAccess: {13}to dn.base="$GROUPDN" by * read by * break
+olcAccess: {14}to dn.base="$USERGROUPDN" by * read by * break
+olcAccess: {15}to dn.base="$AGENTGROUPDN" by * read by * break
+olcAccess: {16}to dn.base="$ROLEGROUPDN" by * read by * break
+olcAccess: {17}to * by self write
+olcAccess: {1}to dn.subtree="$ROLEGROUPDN" by dn.subtree="$AGENTDN" read by * break
+olcAccess: {2}to dn.subtree="$USERDN" by dn.subtree="$AGENTDN" read by * break
+olcAccess: {3}to dn.subtree="$USERDN" by group.exact="$ADMINGROUPDN" write by * break
+olcAccess: {4}to dn.subtree="$AGENTDN" by group.exact="$ADMINGROUPDN" write by * break
+olcAccess: {5}to dn.subtree="$POLICYGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
+olcAccess: {6}to dn.subtree="$USERGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
+olcAccess: {7}to dn.subtree="$ROLEGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
+olcAccess: {8}to dn.subtree="$AGENTGROUPDN" by group.exact="$ADMINGROUPDN" write by * break
 EOL
 systemctl restart slapd.service
 
