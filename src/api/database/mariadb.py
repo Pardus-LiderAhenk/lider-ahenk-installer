@@ -147,7 +147,7 @@ class MariaDbInstaller(object):
         "fileServerPort": 22,
         "fileServerProtocol": "SSH",
         "fileServerUsername": self.data['fs_username'],
-        "groupLdapBaseDn": "ou=Groups,{0}".format(self.data['l_base_dn']),
+        "groupLdapBaseDn": "ou=Groups,{0}".format(self.base_dn_parse()),
         "groupLdapObjectClasses": "groupOfNames",
         "hotDeploymentPath": None,
         "ldapAllowSelfSignedCert": False,
