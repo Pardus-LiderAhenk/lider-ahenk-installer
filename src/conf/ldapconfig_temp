@@ -122,6 +122,40 @@ objectClass: pardusLiderAhenkConfig
 liderServiceAddress: http://$LIDER_SERVER_ADDR:8181
 cn: liderAhenkConfig
 
+dn: $USERDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Users
+description: Users
+
+dn: $AGENTDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Agents
+description: pardusDeviceGroup
+
+dn: $GROUPDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Groups
+
+dn: $USERGROUPDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: User
+description: User groups
+
+dn: $AGENTGROUPDN
+objectClass: organizationalUnit
+objectClass: pardusLider
+objectClass: top
+ou: Agent
+description: Agent groups
+
 dn: cn=$LIDERCONSOLEUSER,$USERDN
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
@@ -137,40 +171,6 @@ liderPrivilege: [REPORT:ALL]
 liderPrivilege: [TASK:$BASEDN:ALL]
 liderPrivilege: ROLE_ADMIN
 liderPrivilege: ROLE_USER
-
-dn: $AGENTDN
-objectClass: organizationalUnit
-objectClass: pardusLider
-objectClass: top
-ou: Agents
-description: pardusDeviceGroup
-
-dn: $GROUPDN
-objectClass: organizationalUnit
-objectClass: pardusLider
-objectClass: top
-ou: Groups
-
-dn: $USERDN
-objectClass: organizationalUnit
-objectClass: pardusLider
-objectClass: top
-ou: Users
-description: Users
-
-dn: $USERGROUPDN
-objectClass: organizationalUnit
-objectClass: pardusLider
-objectClass: top
-ou: User
-description: User groups
-
-dn: $AGENTGROUPDN
-objectClass: organizationalUnit
-objectClass: pardusLider
-objectClass: top
-ou: Agent
-description: Agent groups
 
 dn: uid=$SIMPLELDAPUSER,$USERDN
 objectClass: inetOrgPerson
@@ -279,7 +279,14 @@ while read -r line; do
         parser_line=$(echo "$name" | awk '{print $2}')
         parser_line=$(echo $parser_line | sed 's/}.*//')
         olc_number=$(echo "${parser_line:1}")
-        echo $olc_number
+        echo "--------------------->>>> "$olc_number
+    fi
+
+    if [[ "$name" == *"to attrs=shadowLastChange by self write by * read"* ]]; then
+        parser_line=$(echo "$name" | awk '{print $2}')
+        parser_line=$(echo $parser_line | sed 's/}.*//')
+        olc_number2=$(echo "${parser_line:1}")
+        echo "--------------------->>>> "$olc_number2
     fi
 done < $file
 
@@ -289,6 +296,7 @@ dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 delete: olcAccess
 olcAccess: {$olc_number}to * by * read
+olcAccess: {$olc_number2}to attrs=shadowLastChange by self write by * read
 EOL
 
 systemctl restart slapd.service
