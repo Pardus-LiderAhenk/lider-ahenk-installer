@@ -138,6 +138,7 @@ class MariaDbInstaller(object):
         "cronIntervalEntrySize": None,
         "cronTaskList": None,
         "disableLocalUser": False,
+        "domainType": "LDAP",
         "entrySizeLimit": None,
         "fileServerAgentFilePath": "{path}/agent-files/{agent}/".format(path=self.data['fs_agent_file_path'], agent="{0}"),
         "fileServerAgreementPath": "{0}/sample-agreement.txt".format(self.data['fs_agreement_path']),
