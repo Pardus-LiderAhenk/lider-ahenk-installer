@@ -47,70 +47,74 @@ class LiderInstaller(object):
                 cfg_data["cmd_liderahenk_repo_key"].format(data["repo_key"], repo_key))
             if result_code == 0:
                 self.logger.info("Lider Ahenk repo key dosyası indirildi")
-            else:
-                self.logger.error("Lider Ahenk repo key dosyası indirilemedi, result_code: " + str(result_code))
-            result_code = self.ssh_api.run_command(cfg_data["cmd_liderahenk_repo_add"].format(data["repo_addr"]))
-            if result_code == 0:
-                self.logger.info("Lider Ahenk repo adresi eklendi")
-            else:
-                self.logger.error("Lider Ahenk repo adresi eklenemedi, result_code: " + str(result_code))
-            result_code = self.ssh_api.run_command(cfg_data["cmd_update"])
-            if result_code == 0:
-                self.logger.info("Paket listesi güncellendi(apt update)")
-            else:
-                self.logger.error("Paket listesi güncellenemdi, result_code: " + str(result_code))
+                result_code = self.ssh_api.run_command(cfg_data["cmd_liderahenk_repo_add"].format(data["repo_addr"]))
+                if result_code == 0:
+                    self.logger.info("Lider Ahenk repo adresi eklendi")
+                else:
+                    self.logger.error("Lider Ahenk repo adresi eklenemedi, result_code: " + str(result_code))
+                result_code = self.ssh_api.run_command(cfg_data["cmd_update"])
+                if result_code == 0:
+                    self.logger.info("Paket listesi güncellendi(apt update)")
+                else:
+                    self.logger.error("Paket listesi güncellenemdi, result_code: " + str(result_code))
 
-            result_code = self.ssh_api.run_command("sudo apt-get install openjdk-8-jdk-headless -y")
-            if result_code == 0:
-                self.logger.info("openjdk-8 paketi başarıyla kuruldu")
-            else:
-                self.logger.error("openjdk-8 paketi kurulamadı")
-            result_code = self.ssh_api.run_command("sudo groupadd tomcat")
-            if result_code == 0:
-                self.logger.info("tomcat grubu oluşturuldu")
-            result_code = self.ssh_api.run_command("sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat")
-            if result_code == 0:
-                self.logger.info("tomcat kullanıcısı oluşturuldu ve ev dizini ayarlandı.")
-            result_code = self.ssh_api.run_command("wget {0}".format(self.tomcat_tar_file))
-            if result_code == 0:
-                self.logger.info("tomcat başarıyla indirildi.")
-            else:
-                self.logger.error("tomcat indirilirken hata oluştu")
-            result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat")
-            self.logger.info("tomcat dizini oluşturuldu")
-            result_code = self.ssh_api.run_command("sudo tar xf apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1")
-            result_code = self.ssh_api.run_command("sudo chgrp -R tomcat /opt/tomcat")
-            result_code = self.ssh_api.run_command("sudo chmod -R g+r /opt/tomcat/conf")
-            result_code = self.ssh_api.run_command("sudo chmod g+x /opt/tomcat/conf")
-            result_code = self.ssh_api.run_command("sudo chown -R tomcat /opt/tomcat/webapps/ /opt/tomcat/work/ /opt/tomcat/temp/ /opt/tomcat/logs/")
-            self.ssh_api.scp_file(self.tomcat_service_path, '/tmp/')
-            result_code = self.ssh_api.run_command("sudo cp /tmp/tomcat.service /etc/systemd/system/")
-            result_code = self.ssh_api.run_command("sudo systemctl daemon-reload")
-            result_code = self.ssh_api.run_command("sudo systemctl enable tomcat")
-            result_code = self.ssh_api.run_command("sudo systemctl start tomcat")
-            self.logger.info("tomcat konfigürastonu tamamlandı")
-            self.ssh_api.scp_file(self.application_properties_out_path, '/tmp')
-            result_code = self.ssh_api.run_command("sudo mkdir -p /etc/lider")
-            result_code = self.ssh_api.run_command("sudo cp /tmp/lider.properties /etc/lider/")
-            result_code = self.ssh_api.run_command("wget {0}".format(self.lider_web_url))
-            if result_code == 0:
-                self.logger.info("ROOT.war başarıyla indirildi.")
-            else:
-                self.logger.error("ROOT.war indirilirken hata oluştu")
-            result_code = self.ssh_api.run_command("sudo cp ROOT.war /opt/tomcat/webapps/")
-            result_code = self.ssh_api.run_command("sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war")
-            # result_code = self.ssh_api.run_command("sudo systemctl restart tomcat.service")
+                result_code = self.ssh_api.run_command("sudo apt-get install openjdk-8-jdk-headless -y")
+                if result_code == 0:
+                    self.logger.info("openjdk-8 paketi başarıyla kuruldu")
+                else:
+                    self.logger.error("openjdk-8 paketi kurulamadı")
+                result_code = self.ssh_api.run_command("sudo groupadd tomcat")
+                if result_code == 0:
+                    self.logger.info("tomcat grubu oluşturuldu")
+                result_code = self.ssh_api.run_command("sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat")
+                if result_code == 0:
+                    self.logger.info("tomcat kullanıcısı oluşturuldu ve ev dizini ayarlandı.")
+                result_code = self.ssh_api.run_command("wget {0}".format(self.tomcat_tar_file))
+                if result_code == 0:
+                    self.logger.info("tomcat başarıyla indirildi.")
+                else:
+                    self.logger.error("tomcat indirilirken hata oluştu")
+                result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat")
+                self.logger.info("tomcat dizini oluşturuldu")
+                result_code = self.ssh_api.run_command(
+                    "sudo tar xf apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1")
+                result_code = self.ssh_api.run_command("sudo chgrp -R tomcat /opt/tomcat")
+                result_code = self.ssh_api.run_command("sudo chmod -R g+r /opt/tomcat/conf")
+                result_code = self.ssh_api.run_command("sudo chmod g+x /opt/tomcat/conf")
+                result_code = self.ssh_api.run_command(
+                    "sudo chown -R tomcat /opt/tomcat/webapps/ /opt/tomcat/work/ /opt/tomcat/temp/ /opt/tomcat/logs/")
+                self.ssh_api.scp_file(self.tomcat_service_path, '/tmp/')
+                result_code = self.ssh_api.run_command("sudo cp /tmp/tomcat.service /etc/systemd/system/")
+                result_code = self.ssh_api.run_command("sudo systemctl daemon-reload")
+                result_code = self.ssh_api.run_command("sudo systemctl enable tomcat")
+                result_code = self.ssh_api.run_command("sudo systemctl start tomcat")
+                self.logger.info("tomcat konfigürastonu tamamlandı")
+                self.ssh_api.scp_file(self.application_properties_out_path, '/tmp')
+                result_code = self.ssh_api.run_command("sudo mkdir -p /etc/lider")
+                result_code = self.ssh_api.run_command("sudo cp /tmp/lider.properties /etc/lider/")
+                result_code = self.ssh_api.run_command("wget {0}".format(self.lider_web_url))
+                if result_code == 0:
+                    self.logger.info("ROOT.war başarıyla indirildi.")
+                else:
+                    self.logger.error("ROOT.war indirilirken hata oluştu")
+                result_code = self.ssh_api.run_command("sudo cp ROOT.war /opt/tomcat/webapps/")
+                result_code = self.ssh_api.run_command("sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war")
+                # result_code = self.ssh_api.run_command("sudo systemctl restart tomcat.service")
 
-            result_code = self.ssh_api.run_command("sudo apt-get install guacd -y")
-            if result_code == 0:
-                self.logger.info("Uzak masaüstü sunucusu yapılandırıldı")
+                result_code = self.ssh_api.run_command("sudo apt-get install guacd -y")
+                if result_code == 0:
+                    self.logger.info("Uzak masaüstü sunucusu yapılandırıldı")
+                else:
+                    self.logger.error(
+                        "Uzak masaüstü sunucusu yapılandırılırken hata oluştu. guacd uygulaması kurulamadı")
+                # filer server configuration
+                self.ssh_api.run_command("mkdir -p {0}/agent-files".format(data["fs_agent_file_path"]))
+                self.ssh_api.run_command(
+                    "sudo chown {0}:{0} {1}/agent-files".format(data['fs_username'], data['fs_agent_file_path']))
+                self.ssh_api.run_command("sudo apt-get install -y sshpass rsync")
+                self.logger.info("lider kurulumu tamamlandı")
             else:
-                self.logger.error("Uzak masaüstü sunucusu yapılandırılırken hata oluştu. guacd uygulaması kurulamadı")
-            # filer server configuration
-            self.ssh_api.run_command("mkdir -p {0}/agent-files".format(data["fs_agent_file_path"]))
-            self.ssh_api.run_command("sudo chown {0}:{0} {1}/agent-files".format(data['fs_username'], data['fs_agent_file_path']))
-            self.ssh_api.run_command("sudo apt-get install -y sshpass rsync")
-            self.logger.info("lider kurulumu tamamlandı")
+                self.logger.error("Lider Ahenk repo key dosyası indirilemedi. Lider sunucu kurulmayacak. result_code: " + str(result_code))
         else:
             self.logger.error("LİDER sunucusuna bağlantı sağlanamadığı için kurulum yapılamadı. Lütfen bağlantı ayarlarını kotrol ediniz!")
 
