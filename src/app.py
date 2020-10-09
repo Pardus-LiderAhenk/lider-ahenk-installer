@@ -41,7 +41,7 @@ class ConfigDialog(QDialog):
         self.contentsWidget.setSpacing(12)
 
         self.pagesWidget = QStackedWidget()
-        self.pagesWidget.setMinimumHeight(800)
+        self.pagesWidget.setMinimumHeight(700)
         self.pagesWidget.setMinimumWidth(1024)
 
         self.pagesWidget.addWidget(SettingsPage())

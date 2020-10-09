@@ -220,30 +220,31 @@ objectClass: pardusLider
 objectClass: top
 ou: Policies
 description: group of policy
-
-dn: $DEFAULTPOLICYDN
-objectClass: person
-objectClass: pwdPolicy
-objectClass: top
-cn: Default Password Policy
-pwdAttribute: userPassword
-sn: Default Password Policy
-description: Default password policy
-pwdAllowUserChange: TRUE
-pwdCheckQuality: 0
-pwdExpireWarning: 0
-pwdFailureCountInterval: 0
-pwdGraceAuthNLimit: 2
-pwdInHistory: 3
-pwdLockout: TRUE
-pwdLockoutDuration: 300
-pwdMaxAge: 30000
-pwdMaxFailure: 3
-pwdMinAge: 0
-pwdMinLength: 4
-pwdMustChange: TRUE
-pwdSafeModify: FALSE
 EOL
+
+# example password policy
+#dn: $DEFAULTPOLICYDN
+#objectClass: person
+#objectClass: pwdPolicy
+#objectClass: top
+#cn: Default Password Policy
+#pwdAttribute: userPassword
+#sn: Default Password Policy
+#description: Default password policy
+#pwdAllowUserChange: TRUE
+#pwdCheckQuality: 0
+#pwdExpireWarning: 0
+#pwdFailureCountInterval: 0
+#pwdGraceAuthNLimit: 2
+#pwdInHistory: 3
+#pwdLockout: TRUE
+#pwdLockoutDuration: 300
+#pwdMaxAge: 30000
+#pwdMaxFailure: 3
+#pwdMinAge: 0
+#pwdMinLength: 4
+#pwdMustChange: TRUE
+#pwdSafeModify: FALSE
 
 # User group with ldap write permission
 ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
