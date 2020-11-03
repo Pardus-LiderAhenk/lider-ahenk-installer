@@ -31,7 +31,6 @@ DEFAULTPOLICYDN="cn=Default Password Policy,$POLICYGROUPDN"
 LIDER_SERVER_ADDR="#LIDER_SERVER_ADDR"
 SIMPLELDAPUSER="test_ldap_user"
 SIMPLELDAPUSERPWD="secret"
-#ADMINPASSWDHASH=$(slappasswd -h {SSHA} -s $ADMINPASSWD)
 
 DBPATH=/var/ldaps/$CNAME
 
@@ -300,6 +299,14 @@ changetype: modify
 delete: olcAccess
 olcAccess: {$olc_number}to * by * read
 olcAccess: {$olc_number2}to attrs=shadowLastChange by self write by * read
+EOL
+
+ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
+dn: olcDatabase={-1}frontend,cn=config
+changetype: modify
+replace: olcSizeLimit
+olcSizeLimit: 5000
+
 EOL
 
 systemctl restart slapd.service
