@@ -81,6 +81,7 @@ class LiderPage(QWidget):
             'ladmin_user': params["ladmin_user"],
             'l_admin_pwd': params["l_admin_pwd"],
             'ladmin_pwd': params["ladmin_pwd"],
+            'ladmin_mail_addr': params["ladmin_mail_addr"],
             'ldap_status': 'new',
             'lider_server_addr': params["lider_server_addr"],
             # yeni ldap kur ya da varolan ldapı konfigüre et 'new' ya da 'update' parametreleri alıyor

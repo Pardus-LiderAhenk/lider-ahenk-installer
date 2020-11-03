@@ -37,6 +37,7 @@ class OpenLdapInstaller(object):
             "#CNCONFIGADMINPASSWD": data["l_config_pwd"],
             "#LIDERCONSOLEUSER": data["ladmin_user"],
             "#LIDERCONSOLEPWD": data["ladmin_pwd"],
+            "#LIDERCONSOLEMAILADDR": data["ladmin_mail_addr"],
             "#LIDER_SERVER_ADDR": data["lider_server_addr"],
             "#AD_DOMAIN_NAME": data["ad_domain_name"],
             "#AD_HOSTNAME": data["ad_hostname"],

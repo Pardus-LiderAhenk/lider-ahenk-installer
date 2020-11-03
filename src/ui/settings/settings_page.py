@@ -141,24 +141,27 @@ class SettingsPage(QWidget):
         ## lider configure layout
         self.ldapAdminLabel = QLabel("LDAP Admin:")
         self.ldap_admin = QLineEdit()
-        self.ldapAdminPwdLabel = QLabel("Sistem Admin Parolası:")
+        self.ldapAdminPwdLabel = QLabel("Sistem Admin Parolası")
         self.ldap_admin_pwd = QLineEdit()
         self.ldap_admin_pwd.setPlaceholderText("****")
         self.ldap_admin_pwd.setEchoMode(QLineEdit.Password)
         self.ldapBaseDnLabel = QLabel("LDAP Base DN:")
         self.ldap_base_dn = QLineEdit()
         self.ldap_base_dn.setPlaceholderText("liderahenk.org")
-        self.ldapConfigPwdLabel = QLabel("LDAP Config Kullanıcı Parolası:")
+        self.ldapConfigPwdLabel = QLabel("LDAP Config Kullanıcı Parolası")
         self.l_config_pwd = QLineEdit()
         self.l_config_pwd.setPlaceholderText("****")
         self.l_config_pwd.setEchoMode(QLineEdit.Password)
-        self.ladminLabel = QLabel("Lider Arayüz Kullanıcı Adı:")
+        self.ladminLabel = QLabel("Lider Arayüz Kullanıcı Adı")
         self.ladmin_user = QLineEdit()
         self.ladmin_user.setPlaceholderText("lider_console")
-        self.ladminPwdLabel = QLabel("Lider Arayüz Kullanıcı Parolası:")
+        self.ladminPwdLabel = QLabel("Lider Arayüz Kullanıcı Parolası")
         self.ladmin_pwd = QLineEdit()
         self.ladmin_pwd.setPlaceholderText("****")
         self.ladmin_pwd.setEchoMode(QLineEdit.Password)
+        self.ladminMailLabel = QLabel("Lider Arayüz Kullanıcı Mail Adresi")
+        self.ladmin_mail_addr = QLineEdit()
+        self.ladmin_mail_addr.setPlaceholderText("lider_console@liderahenk.org")
 
         # Active Directory params
         self.adSelectionBox = QCheckBox("Active Directory Bilgilerini Düzenle")
@@ -197,6 +200,8 @@ class SettingsPage(QWidget):
         self.configLayout.addWidget(self.ladmin_user, 2, 1)
         self.configLayout.addWidget(self.ladminPwdLabel, 3, 0)
         self.configLayout.addWidget(self.ladmin_pwd, 3, 1)
+        self.configLayout.addWidget(self.ladminMailLabel, 4, 0)
+        self.configLayout.addWidget(self.ladmin_mail_addr, 4, 1)
 
         # self.configLayout.addWidget(self.adSelectionBox, 4, 0)
         # self.configLayout.addWidget(self.ad_host_label, 5, 0)
@@ -487,7 +492,7 @@ class SettingsPage(QWidget):
             'ejabberd_server_addr': self.ejabberd_server_addr.text(),
             'ejabberd_server_username': self.ejabberd_server_username.text(),
             'ejabberd_server_username_pwd': self.ejabberd_server_username_pwd.text(),
-            'e_service_name': "im.liderahenk.org",
+            'e_service_name': "im.eba.gov.tr",
             'e_hosts': self.ejabberd_server_addr.text(),
             'lider_username': 'lider_sunucu',
             'lider_user_pwd': self.ldap_admin_pwd.text(),
@@ -508,6 +513,7 @@ class SettingsPage(QWidget):
             'l_config_admin_dn': "cn=admin,cn=config",
             'ladmin_user': self.ladmin_user.text(),
             'ladmin_pwd': self.ldap_admin_pwd.text(),
+            'ladmin_mail_addr': self.ladmin_mail_addr.text(),
             'ldap_status': 'new',
 
             # AD Configuration
@@ -524,6 +530,7 @@ class SettingsPage(QWidget):
             'lider_server_addr': self.lider_server_addr.text(),
             'lider_server_username': self.lider_server_username.text(),
             'lider_server_username_pwd': self.lider_server_username_pwd.text(),
+
             'file_server': self.lider_server_addr.text(),
             'fs_username': self.lider_server_username.text(),
             'fs_username_pwd': self.lider_server_username_pwd.text(),
@@ -695,6 +702,7 @@ class SettingsPage(QWidget):
                 self.ldap_admin_pwd.setText(data["l_admin_pwd"])
                 self.ladmin_user.setText(data["ladmin_user"])
                 self.ladmin_pwd.setText(data["l_admin_pwd"])
+                self.ladmin_mail_addr.setText(data["ladmin_mail_addr"])
                 self.ad_host.setText(data["ad_host"])
                 self.ad_hostname.setText(data["ad_hostname"])
                 self.ad_domain_name.setText(data["ad_domain_name"])
