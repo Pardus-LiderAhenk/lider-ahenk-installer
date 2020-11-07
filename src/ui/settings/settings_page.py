@@ -492,7 +492,7 @@ class SettingsPage(QWidget):
             'ejabberd_server_addr': self.ejabberd_server_addr.text(),
             'ejabberd_server_username': self.ejabberd_server_username.text(),
             'ejabberd_server_username_pwd': self.ejabberd_server_username_pwd.text(),
-            'e_service_name': "im.eba.gov.tr",
+            'e_service_name': "im.liderahenk.org",
             'e_hosts': self.ejabberd_server_addr.text(),
             'lider_username': 'lider_sunucu',
             'lider_user_pwd': self.ldap_admin_pwd.text(),
