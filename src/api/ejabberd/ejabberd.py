@@ -121,18 +121,16 @@ class EjabberInstaller(object):
                     self.logger.error(
                         "{0} kullanıcısı kaydedilemedi, result_code: ".format(data["lider_username"]) + str(
                             result_code))
-                result_code = self.ssh_api.run_command(
-                    self.cmd_srg_create.format(self.cmd_bin_ejabberd_path, data["e_service_name"]))
-                if result_code == 0:
-                    self.logger.info("shared roster grubu oluşturuldu.")
-                else:
-                    self.logger.error("shared roster grubu oluşturulamadı, resuşt_code: " + str(result_code))
-                result_code = self.ssh_api.run_command(
-                    self.cmd_srg_user_add.format(self.cmd_bin_ejabberd_path, data["e_service_name"]))
-                if result_code == 0:
-                    self.logger.info("Kullanıcılar shared roster grubuna eklendi")
-                else:
-                    self.logger.error("Kullanıcılar shared roster grubuna eklenemedi, result_code: " + str(result_code))
+                # result_code = self.ssh_api.run_command(self.cmd_srg_create.format(self.cmd_bin_ejabberd_path, data["e_service_name"]))
+                # if result_code == 0:
+                #     self.logger.info("shared roster grubu oluşturuldu.")
+                # else:
+                #     self.logger.error("shared roster grubu oluşturulamadı, resuşt_code: " + str(result_code))
+                # result_code = self.ssh_api.run_command(self.cmd_srg_user_add.format(self.cmd_bin_ejabberd_path, data["e_service_name"]))
+                # if result_code == 0:
+                #     self.logger.info("Kullanıcılar shared roster grubuna eklendi")
+                # else:
+                #     self.logger.error("Kullanıcılar shared roster grubuna eklenemedi, result_code: " + str(result_code))
                 result_code = self.ssh_api.run_command(self.cmd_jabberd_restart.format(self.cmd_bin_ejabberd_path))
                 if result_code == 0:
                     self.logger.info("Ejabberd servisi başlatıldı")
