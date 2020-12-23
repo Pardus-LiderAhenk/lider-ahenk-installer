@@ -512,7 +512,7 @@ class SettingsPage(QWidget):
             'l_org_name': l_org_name,
             'l_config_admin_dn': "cn=admin,cn=config",
             'ladmin_user': self.ladmin_user.text(),
-            'ladmin_pwd': self.ldap_admin_pwd.text(),
+            'ladmin_pwd': self.ladmin_pwd.text(),
             'ladmin_mail_addr': self.ladmin_mail_addr.text(),
             'ldap_status': 'new',
 
