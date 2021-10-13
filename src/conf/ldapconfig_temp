@@ -70,6 +70,12 @@ EOL
 # Policy modulu icin gerekli schemayi yukler
 ldapadd -x -D "$CNCONFIGADMINDN" -f /etc/ldap/schema/ppolicy.ldif -w $CNCONFIGADMINPASSWD
 
+# Argon 2 için gerekli modüller indiriliyor
+wget https://liderahenk.org/downloads/pw-argon2.la -P /usr/lib/ldap
+wget https://liderahenk.org/downloads/pw-argon2.so -P /usr/lib/ldap
+wget https://liderahenk.org/downloads/pw-argon2.so.0 -P /usr/lib/ldap
+wget https://liderahenk.org/downloads/pw-argon2.so.0.0.0 -P /usr/lib/ldap
+
 # Varsayilan gerekli modulleri ayarlar
 ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
 dn: cn=module{0},cn=config
@@ -78,6 +84,7 @@ add: olcModuleLoad
 olcModuleLoad: unique
 olcModuleLoad: ppolicy
 olcModuleLoad: memberof
+olcModuleLoad: pw-argon2
 EOL
 
 #uid parametresini unique yapar. (unique modulu yuklu olmalidir.)
