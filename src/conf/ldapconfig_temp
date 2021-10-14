@@ -6,14 +6,14 @@ BASECN="#BASECN"
 ORGANIZATION="#ORGANIZATION"
 
 ADMINCN="#ADMINCN"
-ADMINPASSWD="#ADMINPASSWD"
+ADMINPASSWD='#ADMINPASSWD'
 CNCONFIGADMINDN="#CNCONFIGADMINDN"
-CNCONFIGADMINPASSWD="#CNCONFIGADMINPASSWD"
+CNCONFIGADMINPASSWD='#CNCONFIGADMINPASSWD'
 LIDERAHENK_SCHEMA_PATH="/tmp/liderahenk.ldif"
 SUDO_SCHEMA_PATH="/tmp/sudo.ldif"
 
 LIDERCONSOLEUSER="#LIDERCONSOLEUSER"
-LIDERCONSOLEPWD="#LIDERCONSOLEPWD"
+LIDERCONSOLEPWD='#LIDERCONSOLEPWD'
 LIDERCONSOLEMAILADDR="#LIDERCONSOLEMAILADDR"
 ADMINDN="$ADMINCN,$BASEDN"
 
@@ -29,19 +29,17 @@ POLICYGROUPDN="ou=Policies,$GROUPDN"
 DEFAULTPOLICYDN="cn=Default Password Policy,$POLICYGROUPDN"
 
 LIDER_SERVER_ADDR="#LIDER_SERVER_ADDR"
-SIMPLELDAPUSER="test_ldap_user"
-SIMPLELDAPUSERPWD="secret"
-
+SIMPLELDAPUSER='#SIMPLELDAPUSER'
+SIMPLELDAPUSERPWD='#TESTLDAPUSERPWD'
 DBPATH=/var/ldaps/$CNAME
 
 LASTDBCOUNT=`ldapsearch -LLL -x -s sub -D "$CNCONFIGADMINDN" -w $CNCONFIGADMINPASSWD -b "cn=config" "(olcDatabase=*)" | egrep -o "dn: olcDatabase={([0-9]+)}mdb" | tac | egrep -o -m1 "[0-9]+"`
 CURDBNO=`expr $LASTDBCOUNT + 1`
 
 systemctl restart slapd.service
-
 # password for cn=admin,cn=config
-NEW_PASSWD=$(slappasswd -h {SSHA} -s $CNCONFIGADMINPASSWD)
-echo $NEW_PASSWD
+NEW_CONFIG_PASSWD=$(slappasswd -h {SSHA} -s $CNCONFIGADMINPASSWD)
+NEW_ADMIN_PASSWD=$(slappasswd -h {SSHA} -s $ADMINPASSWD)
 
 if [ -d "$DBPATH" ]; then
     echo "ERROR: Directory $DBPATH already exists!" 1>&2
@@ -57,7 +55,13 @@ ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
 dn: olcDatabase={0}config,cn=config
 changetype: modify
 replace: olcRootPW
-olcRootPW: $NEW_PASSWD
+olcRootPW: $NEW_CONFIG_PASSWD
+
+dn: olcDatabase={1}mdb,cn=config
+#olcRootDN: $BASEDN
+changetype: modify
+replace: olcRootPW
+olcRootPW: $NEW_ADMIN_PASSWD
 
 dn: cn=config
 replace: olcAuthzRegexp
@@ -119,9 +123,7 @@ EOL
 
 # add liderahenk.ldif file to ldap
 ldapadd -x -D "$CNCONFIGADMINDN" -f $LIDERAHENK_SCHEMA_PATH -w $CNCONFIGADMINPASSWD
-
 ldapadd -x -D "$CNCONFIGADMINDN" -f $SUDO_SCHEMA_PATH -w $CNCONFIGADMINPASSWD
-
 ldapadd -x -D "$ADMINDN" -w $ADMINPASSWD << EOL
 dn: cn=liderAhenkConfig,$BASEDN
 changetype: add
@@ -218,7 +220,7 @@ dn: cn=rol-1,$ROLEGROUPDN
 objectClass: sudoRole
 objectClass: top
 cn: rol-1
-sudoUser: test_ldap_user
+sudoUser: @SIMPLELDAPUSER
 sudoHost: ALL
 sudoCommand: ALL
 
@@ -307,14 +309,11 @@ delete: olcAccess
 olcAccess: {$olc_number}to * by * read
 olcAccess: {$olc_number2}to attrs=shadowLastChange by self write by * read
 EOL
-
 ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
 dn: olcDatabase={-1}frontend,cn=config
 changetype: modify
 replace: olcSizeLimit
 olcSizeLimit: 5000
-
 EOL
-
 systemctl restart slapd.service
 

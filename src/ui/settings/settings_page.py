@@ -110,7 +110,7 @@ class SettingsPage(QWidget):
         self.liderGroup.setLayout(self.liderLayout)
 
         ## Connect Layout
-        self.connectGroup = QGroupBox("Lider Ahenk Sunucu Erişim Bilgileri")
+        self.connectGroup = QGroupBox("Liderahenk Sunucu Erişim Bilgileri")
         self.connectLayout = QGridLayout()
         self.connectLayout.addWidget(self.allComponentChekbox, 0, 0)
         self.connectLayout.addWidget(self.databaseCheckBox, 1, 0)
@@ -241,7 +241,7 @@ class SettingsPage(QWidget):
         self.repoTestBox.stateChanged.connect(self.test_repo)
 
         ## Repository Layout
-        self.repoGroup = QGroupBox("Lider Ahenk Paket Deposu Ayarları")
+        self.repoGroup = QGroupBox("Liderahenk Paket Deposu Ayarları")
         self.repoLayout = QGridLayout()
         self.repoLayout.addWidget(self.repoMainBox, 0, 0)
         self.repoLayout.addWidget(self.repoTestBox, 0, 1)
@@ -254,7 +254,7 @@ class SettingsPage(QWidget):
         self.statusLabel = QLabel("Lider kurulum durumu")
         self.install_status = QLineEdit()
         self.install_status.setReadOnly(True)
-        self.install_status.setPlaceholderText("Lider Ahenk Kurulum")
+        self.install_status.setPlaceholderText("Liderahenk Kurulum")
 
         ## Install Status Layout
         self.statusGroup = QGroupBox()
@@ -583,21 +583,21 @@ class SettingsPage(QWidget):
                     return
 
             if self.ldap_base_dn.text() == "" or self.ldap_admin_pwd.text() == "" or self.ladmin_user.text() == "" or self.ladmin_pwd.text() == "" :
-                self.msg_box.information("Lider Ahenk konfigürasyonu için tüm alanları doldurunuz.")
+                self.msg_box.information("Liderahenk konfigürasyonu için tüm alanları doldurunuz.")
             else:
-                install = self.msg_box.install_confirm("Lider Ahenk sunucu kurulumuna başlanacak. Devam etmek istiyor musunuz?")
+                install = self.msg_box.install_confirm("Liderahenk sunucu kurulumuna başlanacak. Devam etmek istiyor musunuz?")
                 if install is True:
                     with open(self.liderahenk_params_path, 'w') as f:
                         json.dump(params, f, ensure_ascii=False)
 
-                    self.install_status.setText("Lider Ahenk kurulumu devam ediyor")
+                    self.install_status.setText("Liderahenk kurulumu devam ediyor")
                     self.install_status.setStyleSheet("background-color: green")
                     self.lider_page.lider_ahenk_install(params)
-                    self.msg_box.information("Lider Ahenk kurulumu tamamlandı.")
-                    self.install_status.setText("Lider Ahenk kurulumu tamamlandı")
+                    self.msg_box.information("Liderahenk kurulumu tamamlandı.")
+                    self.install_status.setText("Liderahenk kurulumu tamamlandı")
                     self.install_status.setStyleSheet("background-color: cyan")
                 else:
-                    self.msg_box.information("Lider Ahenk sunucusu kurulmayacak")
+                    self.msg_box.information("Liderahenk sunucusu kurulmayacak")
         else:
             self.msg_box.information("Lütfen kuruluma başlamak için en bir tane bileşen seçiniz.")
 

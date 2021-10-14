@@ -15,7 +15,6 @@ class ConfigManager(object):
     def __init__(self):
         self.logger = Logger()
         self.config = configparser.ConfigParser()
-        self.installer_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/installer_config.yml' )
         self.installer_config_path2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/installer.conf' )
         if not os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')):
             os.makedirs(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist'))

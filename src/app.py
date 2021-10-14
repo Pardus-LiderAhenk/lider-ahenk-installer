@@ -76,7 +76,7 @@ class ConfigDialog(QDialog):
         mainLayout.addLayout(buttonsLayout)
 
         self.setLayout(mainLayout)
-        self.setWindowTitle("Lider Ahenk Kurulum Uygulaması")
+        self.setWindowTitle("Liderahenk Kurulum Uygulaması")
         self.setWindowIcon(QIcon(":/images/liderahenk-32.png"))
 
     def close_page(self):
@@ -87,7 +87,7 @@ class ConfigDialog(QDialog):
         self.close()
 
     def about_lider_installer(self):
-        self.msg_box.about("Lider Ahenk Merkezi Yönetim Sistemi Kurulum Uygulaması\nDaha fazla bilgi için...\nwww.liderahenk.org\nVersiyon: 2.0")
+        self.msg_box.about("Liderahenk Merkezi Yönetim Sistemi Kurulum Uygulaması\nDaha fazla bilgi için...\nwww.liderahenk.org\nVersiyon: 2.0")
 
     def changePage(self, current, previous):
         if not current:

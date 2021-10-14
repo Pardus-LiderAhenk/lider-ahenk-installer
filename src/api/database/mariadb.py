@@ -36,10 +36,9 @@ class MariaDbInstaller(object):
     def install(self, data):
         self.data = data
         config_manager = ConfigManager()
-        cfg_data = config_manager.read()
 
         if self.ssh_status == "Successfully Authenticated":
-            result_code = self.ssh_api.run_command(cfg_data["cmd_update"])
+            result_code = self.ssh_api.run_command("sudo apt update")
             if result_code == 0:
                 self.logger.info("Paket listesi güncellendi(apt update)")
             else:

@@ -16,7 +16,7 @@ class MessageBox(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.title = 'Lider Ahenk Bilgilendirme'
+        self.title = 'Liderahenk Bilgilendirme'
         self.width = 1024
         self.height = 500
 
@@ -32,7 +32,7 @@ class MessageBox(QWidget):
         # self.msgBox.setDefaultButton(QMessageBox.No)
 
     def about(self, message):
-        QMessageBox.about(self, "Lider Ahenk Kurulum Uygulaması", message)
+        QMessageBox.about(self, "Liderahenk Kurulum Uygulaması", message)
 
     def warning(self, message):
         msgBox = QMessageBox()
