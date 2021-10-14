@@ -15,13 +15,8 @@ class LiderConsoleInstaller(object):
         self.logger = Logger()
         self.util = Util()
         self.config_manager = ConfigManager()
-        self.lider_conf_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/tr.org.liderahenk.cfg')
-        self.db_conf_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/tr.org.liderahenk.datasource.cfg')
-        self.lider_conf_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/tr.org.liderahenk.cfg')
-        self.db_conf_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/tr.org.liderahenk.datasource.cfg')
 
     def install(self, data):
-
         repo_key = data["repo_key"]
         repo_key = repo_key.rsplit("/")[-1]
 
