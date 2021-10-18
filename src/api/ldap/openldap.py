@@ -113,6 +113,7 @@ class OpenLdapInstaller(object):
                 else:
                     self.logger.error("ldap config betiği çalıştırılırken hata oluştu ve lider ahenk konfigürasyonları tamamlanamadı")
                 self.logger.info("OpenLDAP kurulumu tamamlandı")
+                self.ssh_api.run_command("sudo rm -rf /tmp/ldapconfig")
             else:
                  self.logger.error("OpenLDAP sunucusuna bağlantı sağlanamadı için kurulum yapılamadı. Lütfen bağlantı ayarlarını kotrol ediniz!")
             #     # print("bağlantı sağlanamadığı için kurulum yapılamadı..")

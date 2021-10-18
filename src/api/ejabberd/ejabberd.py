@@ -152,6 +152,8 @@ class EjabberInstaller(object):
                     self.logger.info("Ejabberd servis olarak ayarlandı.")
                 else:
                     self.logger.error("Ejabberd servis olarak ayarlanamadı.")
+
+                self.ssh_api.run_command("sudo rm -rf /tmp/ejabberd.yml")
             else:
                 self.logger.error("Lider Ahenk repo key dosyası indirilemedi. Ejabberd sunucusu kurulmayacak. result_code: "+str(result_code))
         else:

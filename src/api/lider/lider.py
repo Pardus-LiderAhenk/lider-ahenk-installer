@@ -106,6 +106,7 @@ class LiderInstaller(object):
                     "sudo chown {0}:{0} {1}/agent-files".format(data['fs_username'], data['fs_agent_file_path']))
                 self.ssh_api.run_command("sudo apt-get install -y sshpass rsync")
                 self.logger.info("lider kurulumu tamamlandı")
+                self.ssh_api.run_command("sudo rm -rf /tmp/lider.properties")
             else:
                 self.logger.error("Lider Ahenk repo key dosyası indirilemedi. Lider sunucu kurulmayacak. result_code: " + str(result_code))
         else:
