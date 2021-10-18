@@ -1,6 +1,9 @@
 # LİDER AHENK UYGULAMASI NASIL KURULUR
 
-##### Not : Not : Lider sunucusu için Pardus-19.5-SERVER sürümünü kullanınız. Pardus 19.5 sürümünü http://indir.pardus.org.tr/ISO/Pardus19/Pardus-19.5-SERVER-amd64.iso adresinden indirebilirsiniz. Sunucu dilini ingilizce olarak ayarlayınız.
+
+#### Not : Lider Kurulum Uygulamasını Pardus-21.0-GNOME sürümü https://indir.pardus.org.tr/ISO/Pardus21/Pardus-21.0-GNOME-amd64.iso veya Pardus-21.0-XFCE https://indir.pardus.org.tr/ISO/Pardus21/Pardus-21.0-XFCE-amd64.iso sürümü üzerinde çalıştırınız.
+
+#### Not : Lider sunucusu için Pardus-21.0-SERVER sürümünü kullanınız. Pardus 21.0 sürümünü https://indir.pardus.org.tr/ISO/Pardus21/Pardus-21.0-SERVER-amd64.iso adresinden indirebilirsiniz. Sunucu dilini ingilizce olarak ayarlayınız.
 
 ## Bağımlılıkların Kurulması
 
