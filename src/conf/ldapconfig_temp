@@ -58,10 +58,19 @@ replace: olcRootPW
 olcRootPW: $NEW_CONFIG_PASSWD
 
 dn: olcDatabase={1}mdb,cn=config
-#olcRootDN: $BASEDN
 changetype: modify
 replace: olcRootPW
 olcRootPW: $NEW_ADMIN_PASSWD
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcRootDN
+olcRootDN: $ADMINDN
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcSuffix
+olcSuffix: $BASEDN
 
 dn: cn=config
 replace: olcAuthzRegexp
@@ -79,6 +88,8 @@ wget https://liderahenk.org/downloads/pw-argon2.la -P /usr/lib/ldap
 wget https://liderahenk.org/downloads/pw-argon2.so -P /usr/lib/ldap
 wget https://liderahenk.org/downloads/pw-argon2.so.0 -P /usr/lib/ldap
 wget https://liderahenk.org/downloads/pw-argon2.so.0.0.0 -P /usr/lib/ldap
+#olcModuleLoad: pw-argon2
+
 
 # Varsayilan gerekli modulleri ayarlar
 ldapmodify -Y EXTERNAL -H ldapi:/// << EOL
