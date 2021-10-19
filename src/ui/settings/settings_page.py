@@ -190,7 +190,7 @@ class SettingsPage(QWidget):
 
         self.install_button = QPushButton("Kuruluma Başla")
 
-        self.configGroup = QGroupBox("Lider Ahenk Sunucu Konfigürasyonları")
+        self.configGroup = QGroupBox("Liderahenk Sunucu Konfigürasyonları")
         self.configLayout = QGridLayout()
         self.configLayout.addWidget(self.ldapBaseDnLabel, 0, 0)
         self.configLayout.addWidget(self.ldap_base_dn, 0, 1)
@@ -225,7 +225,7 @@ class SettingsPage(QWidget):
         # self.ad_conf_set_visible()
 
         ## server selection layout
-        self.connectSelectionGroup = QGroupBox("Lider Ahenk Sunucu Platform Bilgileri")
+        self.connectSelectionGroup = QGroupBox("Liderahenk Sunucu Platform Bilgileri")
         self.connectSelectionLayout = QGridLayout()
         self.connectSelectionGroup.setLayout(self.connectSelectionLayout)
 
