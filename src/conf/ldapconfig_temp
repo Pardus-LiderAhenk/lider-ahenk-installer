@@ -59,11 +59,6 @@ olcRootPW: $NEW_CONFIG_PASSWD
 
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
-replace: olcRootPW
-olcRootPW: $NEW_ADMIN_PASSWD
-
-dn: olcDatabase={1}mdb,cn=config
-changetype: modify
 replace: olcRootDN
 olcRootDN: $ADMINDN
 
@@ -71,6 +66,11 @@ dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 replace: olcSuffix
 olcSuffix: $BASEDN
+
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+replace: olcRootPW
+olcRootPW: $NEW_ADMIN_PASSWD
 
 dn: cn=config
 replace: olcAuthzRegexp
