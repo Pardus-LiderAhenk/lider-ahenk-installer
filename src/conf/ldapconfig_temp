@@ -231,7 +231,7 @@ dn: cn=rol-1,$ROLEGROUPDN
 objectClass: sudoRole
 objectClass: top
 cn: rol-1
-sudoUser: @SIMPLELDAPUSER
+sudoUser: $SIMPLELDAPUSER
 sudoHost: ALL
 sudoCommand: ALL
 
