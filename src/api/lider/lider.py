@@ -3,8 +3,8 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import os
-import shutil
-
+import string
+import random
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 from api.util.util import Util
@@ -127,16 +127,20 @@ class LiderInstaller(object):
         db_server = data["db_server_addr"]
         # if data['ip'] == db_server:
         #     db_server = "127.0.0.1"
-        db_data = {
+        char_set = string.ascii_uppercase + string.digits + string.punctuation + string.ascii_lowercase
+        jwt_secret = ''.join(random.sample(char_set * 6, 30))
+        property_data = {
             "##DATABASEADDRESS##": db_server,
             "##DATABASENAME##": data['db_name'],
             "##DATABASEUSERNAME##": data['db_username'],
-            "##DATABASAPASSWORD##": data['db_password']
+            "##DATABASAPASSWORD##": data['db_password'],
+            "##JWTSECRET##": jwt_secret,
+            "##LIDERSERVER##": "http://{0}:8080".format(data['lider_server_addr'])
         }
 
         self.f_db = open(self.application_properties_path, 'r+')
         db_text = self.f_db.read()
-        txt = self.config_manager.replace_all(db_text, db_data)
+        txt = self.config_manager.replace_all(db_text, property_data)
         self.f_db_out = open(self.application_properties_out_path, 'w+')
         self.f_db_out.write(str(txt))
         self.f_db.close()
