@@ -5,8 +5,7 @@
 import json
 import os
 
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTableWidget,
-                             QTableWidgetItem, QComboBox, QCheckBox)
+from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QComboBox, QCheckBox)
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox
 from ui.lider.lider_page import LiderPage
@@ -249,6 +248,14 @@ class SettingsPage(QWidget):
         self.repoLayout.addWidget(self.repo_addr, 1, 1)
         self.repoLayout.addWidget(self.repoKeyLdabel, 2, 0)
         self.repoLayout.addWidget(self.repo_key, 2, 1)
+
+        ## Select Liderahenk version layout
+        self.selectLiderVersionLabel = QLabel("Lider Versiyonu Seçiniz:")
+        self.lider_version_cmb = QComboBox(self)
+        self.lider_version_cmb.addItem("2.0")
+        self.lider_version_cmb.addItem("3.0")
+        self.repoLayout.addWidget(self.selectLiderVersionLabel, 3, 0)
+        self.repoLayout.addWidget(self.lider_version_cmb, 3, 1)
         self.repoGroup.setLayout(self.repoLayout)
 
         self.statusLabel = QLabel("Lider kurulum durumu")
@@ -542,6 +549,9 @@ class SettingsPage(QWidget):
             'repo_type': self.repo_type,
             'repo_key': repo_key,
             'repo_addr': repo_addr,
+
+            # select liderahenk version
+            'lider_version': self.lider_version_cmb.currentText()
         }
 
         if self.databaseCheckBox.isChecked() or self.ldapCheckBox.isChecked() or self.ejabberdCheckBox.isChecked() or self.liderCheckBox.isChecked():

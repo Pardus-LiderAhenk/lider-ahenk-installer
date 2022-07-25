@@ -20,7 +20,10 @@ class LiderInstaller(object):
         self.tomcat_service_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/tomcat.service')
         self.application_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/lider.properties')
         self.application_properties_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/lider.properties')
-        self.lider_web_url = "https://liderahenk.org/downloads/ROOT.war"
+
+        self.liderv2_web_url = "https://liderahenk.org/downloads/v2.0/ROOT.war"
+        self.liderv3_web_url = "https://liderahenk.org/downloads/v3.0/ROOT.war"
+
         self.tomcat_tar_file = "https://liderahenk.org/downloads/apache-tomcat-9.0.36.tar.gz"
         self.dist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')
         self.liderv2_app_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2/src/main/resources/lider.properties')
@@ -69,8 +72,8 @@ class LiderInstaller(object):
                     self.logger.error("tomcat indirilirken hata oluştu")
                 result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat")
                 self.logger.info("tomcat dizini oluşturuldu")
-                result_code = self.ssh_api.run_command(
-                    "sudo tar xf apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1")
+                result_code = self.ssh_api.run_command("sudo tar xf apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1")
+                result_code = self.ssh_api.run_command("sudo rm -rf /opt/tomcat/webapps/")
                 result_code = self.ssh_api.run_command("sudo chgrp -R tomcat /opt/tomcat")
                 result_code = self.ssh_api.run_command("sudo chmod -R g+r /opt/tomcat/conf")
                 result_code = self.ssh_api.run_command("sudo chmod g+x /opt/tomcat/conf")
@@ -81,25 +84,31 @@ class LiderInstaller(object):
                 result_code = self.ssh_api.run_command("sudo systemctl daemon-reload")
                 result_code = self.ssh_api.run_command("sudo systemctl enable tomcat")
                 result_code = self.ssh_api.run_command("sudo systemctl start tomcat")
-                self.logger.info("tomcat konfigürastonu tamamlandı")
+                self.logger.info("tomcat konfigürasyonu tamamlandı")
                 self.ssh_api.scp_file(self.application_properties_out_path, '/tmp')
                 result_code = self.ssh_api.run_command("sudo mkdir -p /etc/lider")
                 result_code = self.ssh_api.run_command("sudo cp /tmp/lider.properties /etc/lider/")
-                result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.lider_web_url))
-                if result_code == 0:
-                    self.logger.info("ROOT.war başarıyla indirildi.")
+               
+                # Install lider v2.0.0 or v3.0.0
+                if data["lider_version"] == '2.0':
+                    result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv2_web_url))
+                    if result_code == 0:
+                        self.logger.info("Lider 2.0.0 (ROOT.war) başarıyla indirildi.")
+                    else:
+                        self.logger.error("Lider 2.0.0 (ROOT.war) indirilirken hata oluştu")
                 else:
-                    self.logger.error("ROOT.war indirilirken hata oluştu")
-                # result_code = self.ssh_api.run_command("sudo cp ROOT.war /opt/tomcat/webapps/")
-                result_code = self.ssh_api.run_command("sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war")
-                # result_code = self.ssh_api.run_command("sudo systemctl restart tomcat.service")
-
+                    result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv3_web_url))
+                    if result_code == 0:
+                        self.logger.info("Lider 3.0.0 (ROOT.war) başarıyla indirildi.")
+                    else:
+                        self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")
+                result_code = self.ssh_api.run_command("sudo chown -R tomcat:tomcat /opt/tomcat/webapps/")
+                result_code = self.ssh_api.run_command("sudo systemctl restart tomcat.service")
                 result_code = self.ssh_api.run_command("sudo apt-get install guacd -y")
                 if result_code == 0:
                     self.logger.info("Uzak masaüstü sunucusu yapılandırıldı")
                 else:
-                    self.logger.error(
-                        "Uzak masaüstü sunucusu yapılandırılırken hata oluştu. guacd uygulaması kurulamadı")
+                    self.logger.error("Uzak masaüstü sunucusu yapılandırılırken hata oluştu. guacd uygulaması kurulamadı")
                 # filer server configuration
                 self.ssh_api.run_command("mkdir -p {0}/agent-files".format(data["fs_agent_file_path"]))
                 self.ssh_api.run_command(

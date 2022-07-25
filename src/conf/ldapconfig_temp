@@ -84,10 +84,10 @@ EOL
 ldapadd -x -D "$CNCONFIGADMINDN" -f /etc/ldap/schema/ppolicy.ldif -w $CNCONFIGADMINPASSWD
 
 # Argon 2 için gerekli modüller indiriliyor
-wget https://liderahenk.org/downloads/pw-argon2.la -P /usr/lib/ldap
-wget https://liderahenk.org/downloads/pw-argon2.so -P /usr/lib/ldap
-wget https://liderahenk.org/downloads/pw-argon2.so.0 -P /usr/lib/ldap
-wget https://liderahenk.org/downloads/pw-argon2.so.0.0.0 -P /usr/lib/ldap
+wget https://liderahenk.org/downloads/argon/pw-argon2.la -P /usr/lib/ldap
+wget https://liderahenk.org/downloads/argon/pw-argon2.so -P /usr/lib/ldap
+wget https://liderahenk.org/downloads/argon/pw-argon2.so.0 -P /usr/lib/ldap
+wget https://liderahenk.org/downloads/argon/pw-argon2.so.0.0.0 -P /usr/lib/ldap
 #olcModuleLoad: pw-argon2
 
 

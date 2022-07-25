@@ -10,7 +10,7 @@ import psutil
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QApplication, QDialog, QHBoxLayout, QListView, QListWidget, QListWidgetItem, QPushButton,
-                             QStackedWidget, QVBoxLayout, QSlider)
+                             QStackedWidget, QVBoxLayout)
 import ui.conf.configdialog_rc
 from ui.conf.home_page import HomePage
 from ui.settings.settings_page import SettingsPage
@@ -87,7 +87,7 @@ class ConfigDialog(QDialog):
         self.close()
 
     def about_lider_installer(self):
-        self.msg_box.about("Liderahenk Merkezi Yönetim Sistemi Kurulum Uygulaması\nDaha fazla bilgi için...\nwww.liderahenk.org\nVersiyon: 2.0")
+        self.msg_box.about("Liderahenk Merkezi Yönetim Sistemi Kurulum Uygulaması\nDaha fazla bilgi için...\nwww.liderahenk.org\nVersiyon: 2.2")
 
     def changePage(self, current, previous):
         if not current:

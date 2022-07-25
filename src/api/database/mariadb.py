@@ -197,7 +197,10 @@ class MariaDbInstaller(object):
         "xmppServiceName": self.data['e_service_name'],
         "xmppUseCustomSsl": False,
         "xmppUseSsl": False,
-        "xmppUsername": "lider_sunucu"
+        "xmppUsername": "lider_sunucu",
+        "xmppBoshAddress": "http://" + self.data['e_hosts'] + ":5280/bosh",
+        "selectedRegistrationType": "HOSTNAME",
+        "sudoRoleType": "LDAP"
     }
         try:
             # date = datetime.datetime.strptime('my date', "%b %d %Y %H:%M")
