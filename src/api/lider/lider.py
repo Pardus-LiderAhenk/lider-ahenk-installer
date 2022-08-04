@@ -22,7 +22,7 @@ class LiderInstaller(object):
         self.application_properties_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/lider.properties')
 
         self.liderv2_web_url = "https://liderahenk.org/downloads/v2.0/ROOT.war"
-        self.liderv3_web_url = "https://liderahenk.org/downloads/v3.0/ROOT.war"
+        self.liderv3_web_url = "https://liderahenk.org/downloads/v3.0-test/ROOT.war"
 
         self.tomcat_tar_file = "https://liderahenk.org/downloads/apache-tomcat-9.0.36.tar.gz"
         self.dist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')
@@ -136,7 +136,7 @@ class LiderInstaller(object):
         db_server = data["db_server_addr"]
         # if data['ip'] == db_server:
         #     db_server = "127.0.0.1"
-        char_set = string.ascii_uppercase + string.digits + string.punctuation + string.ascii_lowercase
+        char_set = string.ascii_uppercase + string.digits + "!#$%&()*+,.:;@" + string.ascii_lowercase
         jwt_secret = ''.join(random.sample(char_set * 6, 30))
         property_data = {
             "##DATABASEADDRESS##": db_server,
