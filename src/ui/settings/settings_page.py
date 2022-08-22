@@ -242,12 +242,12 @@ class SettingsPage(QWidget):
         ## Repository Layout
         self.repoGroup = QGroupBox("Liderahenk Paket Deposu Ayarları")
         self.repoLayout = QGridLayout()
-        self.repoLayout.addWidget(self.repoMainBox, 0, 0)
-        self.repoLayout.addWidget(self.repoTestBox, 0, 1)
-        self.repoLayout.addWidget(self.repoLabel, 1, 0)
-        self.repoLayout.addWidget(self.repo_addr, 1, 1)
-        self.repoLayout.addWidget(self.repoKeyLdabel, 2, 0)
-        self.repoLayout.addWidget(self.repo_key, 2, 1)
+        # self.repoLayout.addWidget(self.repoMainBox, 0, 0)
+        # self.repoLayout.addWidget(self.repoTestBox, 0, 1)
+        self.repoLayout.addWidget(self.repoLabel, 0, 0)
+        self.repoLayout.addWidget(self.repo_addr, 0, 1)
+        self.repoLayout.addWidget(self.repoKeyLdabel, 1, 0)
+        self.repoLayout.addWidget(self.repo_key, 1, 1)
 
         ## Select Liderahenk version layout
         self.selectLiderVersionLabel = QLabel("Lider Versiyonu Seçiniz:")
