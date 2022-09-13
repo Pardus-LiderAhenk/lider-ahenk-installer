@@ -69,10 +69,10 @@ class Settings():
                     while (True):
                         self.repo = input("Lütfen REPO tipi seçiniz Test(T) veya Stable(S) : ")
                         if self.repo == "t" or self.repo == "T":
-                            self.repoaddress = "deb [arch=amd64] http://repo.liderahenk.org/liderahenk-test testing main"
+                            self.repoaddress = "deb [arch=amd64] https://repo.liderahenk.org/liderahenk-test testing main"
                             break
                         elif self.repo == "S" or self.repo == "s":
-                            self.repoaddress = "deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main"
+                            self.repoaddress = "deb [arch=amd64] https://repo.liderahenk.org/liderahenk stable main"
                             break
                         elif self.repo == "Q" or self.repo == "q":
                             exit()
@@ -82,7 +82,7 @@ class Settings():
                         "username" : self.username,
                         "password" : self.password,
                         "location" : "remote",
-                        "repo_key": "http://repo.liderahenk.org/liderahenk-archive-keyring.asc",
+                        "repo_key": "https://repo.liderahenk.org/liderahenk-archive-keyring.asc",
                         "repo_addr": self.repoaddress,
                         "server_name": "all",
                     }
