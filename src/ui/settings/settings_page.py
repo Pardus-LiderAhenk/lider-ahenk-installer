@@ -233,9 +233,9 @@ class SettingsPage(QWidget):
         self.repoTestBox = QCheckBox("Test Paket Deposu")
         self.repoMainBox.setChecked(True)
         self.repoLabel = QLabel("Depo Adresi:")
-        self.repo_addr = QLineEdit("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
+        self.repo_addr = QLineEdit("deb [arch=amd64] https://repo.liderahenk.org/liderahenk stable main")
         self.repoKeyLdabel = QLabel("Depo Key Dosyası:")
-        self.repo_key = QLineEdit("http://repo.liderahenk.org/liderahenk-archive-keyring.asc")
+        self.repo_key = QLineEdit("https://repo.liderahenk.org/liderahenk-archive-keyring.asc")
         self.repoMainBox.stateChanged.connect(self.main_repo)
         self.repoTestBox.stateChanged.connect(self.test_repo)
 
