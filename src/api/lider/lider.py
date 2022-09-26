@@ -101,8 +101,14 @@ class LiderInstaller(object):
                     if result_code == 0:
                         self.logger.info("Lider 3.0.0 (ROOT.war) başarıyla indirildi.")
                     else:
-                        self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")
+                        self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")                        
+                result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat/webapps/files")
+                if result_code == 0:
+                    self.logger.info("files dizini oluşturuldu")
+                else:
+                    self.logger.error("files dizini oluşturulurken hata oluştu")              
                 result_code = self.ssh_api.run_command("sudo chown -R tomcat:tomcat /opt/tomcat/webapps/")
+                result_code = self.ssh_api.run_command("sudo chown -R tomcat:tomcat /opt/tomcat/webapps/files")
                 result_code = self.ssh_api.run_command("sudo systemctl restart tomcat.service")
                 result_code = self.ssh_api.run_command("sudo apt-get install guacd -y")
                 if result_code == 0:
