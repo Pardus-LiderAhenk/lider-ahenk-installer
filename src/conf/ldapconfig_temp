@@ -24,6 +24,7 @@ AGENTDN="ou=Agents,$BASEDN"
 AGENTGROUPDN="ou=Agent,$GROUPDN"
 USERGROUPDN="ou=User,$GROUPDN"
 ADMINGROUPDN="cn=adminGroups,$USERGROUPDN"
+DOMAINADMINGROUPDN="cn=domainAdminGroup,$USERGROUPDN"
 ROLEGROUPDN="ou=Role,$GROUPDN"
 POLICYGROUPDN="ou=Policies,$GROUPDN"
 DEFAULTPOLICYDN="cn=Default Password Policy,$POLICYGROUPDN"
@@ -217,8 +218,18 @@ objectClass: groupOfNames
 objectClass: top
 member: $ADMINDN
 member: cn=$LIDERCONSOLEUSER,$USERDN
+member: uid=$SIMPLELDAPUSER,$USERDN
 cn: adminGroups
+liderPrivilege: ROLE_DOMAIN_ADMIN
 description: User group authorized to write on LDAP
+
+dn: $DOMAINADMINGROUPDN
+objectClass: groupOfNames
+objectClass: top
+member: uid=$SIMPLELDAPUSER,$USERDN
+cn: domainAdminGroup
+liderPrivilege: ROLE_DOMAIN_ADMIN
+description: Domain admin group for register client
 
 dn: $ROLEGROUPDN
 objectClass: organizationalUnit
