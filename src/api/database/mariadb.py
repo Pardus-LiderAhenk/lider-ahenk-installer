@@ -199,7 +199,7 @@ class MariaDbInstaller(object):
         "xmppUseSsl": False,
         "xmppUsername": "lider_sunucu",
         "xmppBoshAddress": "http://" + self.data['e_hosts'] + ":5280/bosh",
-        "selectedRegistrationType": "HOSTNAME",
+        "selectedRegistrationType": "DEFAULT",
         "sudoRoleType": "LDAP"
     }
         try:

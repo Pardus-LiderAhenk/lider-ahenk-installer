@@ -216,6 +216,7 @@ description: example ldap user
 dn: $ADMINGROUPDN
 objectClass: groupOfNames
 objectClass: top
+objectClass: pardusLider
 member: $ADMINDN
 member: cn=$LIDERCONSOLEUSER,$USERDN
 member: uid=$SIMPLELDAPUSER,$USERDN
