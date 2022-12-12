@@ -227,6 +227,7 @@ description: User group authorized to write on LDAP
 dn: $DOMAINADMINGROUPDN
 objectClass: groupOfNames
 objectClass: top
+objectClass: pardusLider
 member: uid=$SIMPLELDAPUSER,$USERDN
 cn: domainAdminGroup
 liderPrivilege: ROLE_DOMAIN_ADMIN
