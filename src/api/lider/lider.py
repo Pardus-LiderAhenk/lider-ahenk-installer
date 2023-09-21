@@ -143,7 +143,7 @@ class LiderInstaller(object):
         # if data['ip'] == db_server:
         #     db_server = "127.0.0.1"
         char_set = string.ascii_uppercase + string.digits + "!#$%&()*+,.:;@" + string.ascii_lowercase
-        jwt_secret = ''.join(random.sample(char_set * 6, 30))
+        jwt_secret = ''.join(random.sample(char_set * 6, 32))
         property_data = {
             "##DATABASEADDRESS##": db_server,
             "##DATABASENAME##": data['db_name'],
