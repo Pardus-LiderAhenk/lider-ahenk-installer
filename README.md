@@ -13,6 +13,9 @@ Uçbirimde aşağıdaki komutlar sırasıyla yazılır.
 sudo apt-get install python3-paramiko python3-pyqt5 python3-pip python3-psutil xterm 
 ````
 ````
+sudo rm /usr/lib/python3.11/EXTERNALLY-MANAGED
+````
+````
 pip install mysql-connector-python argon2-cffi
 ````
 
