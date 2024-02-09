@@ -14,6 +14,7 @@ class OpenLdapInstaller(object):
         self.ssh_status = ssh_status
         self.logger = Logger()
         self.ldap_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/ldapconfig_temp')
+        self.slapd_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/slapd_config')
         self.update_ldap_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/update_ldap_temp')
         self.ldap_install_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/ldap_install.sh')
         self.liderahenk_ldif_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/liderahenk.ldif')
@@ -73,11 +74,12 @@ class OpenLdapInstaller(object):
             self.ldap_config_out.close()
 
             if self.ssh_status == "Successfully Authenticated":
-                cmd_ldap_remove = "sudo apt purge -y slapd ldap-utils && sudo rm -rf /var/ladps && sudo rm -rf /var/lib/ldap && sudo autoremove -y && apt autoclean -y"
+                cmd_ldap_remove = "sudo apt purge -y slapd ldap-utils && sudo rm -rf /var/ldaps && sudo mv /etc/ldap/ldap.conf /etc/ldap/ldap_old.conf && sudo rm -rf /var/lib/ldap && sudo autoremove -y && apt autoclean -y"
                 #copy ldap_install  script to ldap server
                 self.ssh_api.scp_file(self.ldap_config_out_path, '/tmp')
                 self.logger.info("ldapconfig betiği OpenLDAP sunucusuna kopyalandı")
                 self.ssh_api.scp_file(self.sudo_ldif_path, '/tmp')
+                self.ssh_api.scp_file(self.slapd_config_path, '/tmp')
 
                 ### install slapd package
                 self.ssh_api.run_command(cmd_ldap_remove)
@@ -100,12 +102,17 @@ class OpenLdapInstaller(object):
                 if result_code == 0:
                     self.logger.info("slapd ve ldap-utils paketleri kuruldu")
                 else:
-                    self.logger.error("slapd ve ldap-utils paketleri kurulamadı, result_code: "+str(result_code))
+                    self.logger.error("slapd ve ldap-utils paketleri kurulamadı, result_code: "+str(result_code))              
                 result_code = self.ssh_api.run_command("sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure  slapd")
                 if result_code == 0:
                     self.logger.info("slapd reconfigure edildi")
                 else:
                     self.logger.error("slapd reconfigure edilemedi, result_code: " + str(result_code))
+                result_code = self.ssh_api.run_command("sudo mv /tmp/slapd_config /etc/ldap/slapd.conf")
+                if result_code == 0:
+                    self.logger.info("slapd.conf düzenlendi")
+                else:
+                    self.logger.error("slapd.conf düzenlenemedi, result_code: " + str(result_code))
                 self.ssh_api.run_command('sudo chmod +x /tmp/ldapconfig')
                 result_code = self.ssh_api.run_command('sudo /bin/bash /tmp/ldapconfig')
                 if result_code == 0:

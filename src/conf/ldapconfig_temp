@@ -34,10 +34,11 @@ SIMPLELDAPUSER='#SIMPLELDAPUSER'
 SIMPLELDAPUSERPWD='#TESTLDAPUSERPWD'
 DBPATH=/var/ldaps/$CNAME
 
+systemctl restart slapd.service
+
 LASTDBCOUNT=`ldapsearch -LLL -x -s sub -D "$CNCONFIGADMINDN" -w $CNCONFIGADMINPASSWD -b "cn=config" "(olcDatabase=*)" | egrep -o "dn: olcDatabase={([0-9]+)}mdb" | tac | egrep -o -m1 "[0-9]+"`
 CURDBNO=`expr $LASTDBCOUNT + 1`
 
-systemctl restart slapd.service
 # password for cn=admin,cn=config
 NEW_CONFIG_PASSWD=$(slappasswd -h {SSHA} -s $CNCONFIGADMINPASSWD)
 NEW_ADMIN_PASSWD=$(slappasswd -h {SSHA} -s $ADMINPASSWD)
@@ -82,13 +83,13 @@ olcSizeLimit: 10000
 EOL
 
 # Policy modulu icin gerekli schemayi yukler
-ldapadd -x -D "$CNCONFIGADMINDN" -f /etc/ldap/schema/ppolicy.ldif -w $CNCONFIGADMINPASSWD
+#ldapadd -x -D "$CNCONFIGADMINDN" -f /etc/ldap/schema/ppolicy.ldif -w $CNCONFIGADMINPASSWD
 
 # Argon 2 için gerekli modüller indiriliyor
-wget https://liderahenk.org/downloads/argon/pw-argon2.la -P /usr/lib/ldap
-wget https://liderahenk.org/downloads/argon/pw-argon2.so -P /usr/lib/ldap
-wget https://liderahenk.org/downloads/argon/pw-argon2.so.0 -P /usr/lib/ldap
-wget https://liderahenk.org/downloads/argon/pw-argon2.so.0.0.0 -P /usr/lib/ldap
+#wget https://liderahenk.org/downloads/argon/pw-argon2.la -P /usr/lib/ldap
+#wget https://liderahenk.org/downloads/argon/pw-argon2.so -P /usr/lib/ldap
+#wget https://liderahenk.org/downloads/argon/pw-argon2.so.0 -P /usr/lib/ldap
+#wget https://liderahenk.org/downloads/argon/pw-argon2.so.0.0.0 -P /usr/lib/ldap
 #olcModuleLoad: pw-argon2
 
 
@@ -100,7 +101,7 @@ add: olcModuleLoad
 olcModuleLoad: unique
 olcModuleLoad: ppolicy
 olcModuleLoad: memberof
-olcModuleLoad: pw-argon2
+olcModuleLoad: argon2
 EOL
 
 #uid parametresini unique yapar. (unique modulu yuklu olmalidir.)
