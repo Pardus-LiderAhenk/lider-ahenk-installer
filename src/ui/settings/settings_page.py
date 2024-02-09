@@ -252,7 +252,7 @@ class SettingsPage(QWidget):
         ## Select Liderahenk version layout
         self.selectLiderVersionLabel = QLabel("Lider Versiyonu Seçiniz:")
         self.lider_version_cmb = QComboBox(self)
-        self.lider_version_cmb.addItem("2.0")
+        #self.lider_version_cmb.addItem("2.0")
         self.lider_version_cmb.addItem("3.0")
         self.repoLayout.addWidget(self.selectLiderVersionLabel, 3, 0)
         self.repoLayout.addWidget(self.lider_version_cmb, 3, 1)

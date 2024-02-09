@@ -90,18 +90,28 @@ class LiderInstaller(object):
             result_code = self.ssh_api.run_command("sudo cp /tmp/lider.properties /etc/lider/")
         
             # Install lider v2.0.0 or v3.0.0
-            if data["lider_version"] == '2.0':
-                result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv2_web_url))
-                if result_code == 0:
-                    self.logger.info("Lider 2.0.0 (ROOT.war) başarıyla indirildi.")
-                else:
-                    self.logger.error("Lider 2.0.0 (ROOT.war) indirilirken hata oluştu")
-            else:
+            if data["lider_version"] == '3.0':
                 result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv3_web_url))
                 if result_code == 0:
                     self.logger.info("Lider 3.0.0 (ROOT.war) başarıyla indirildi.")
                 else:
                     self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")                        
+                # result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv2_web_url))
+                # if result_code == 0:
+                #     self.logger.info("Lider 2.0.0 (ROOT.war) başarıyla indirildi.")
+                # else:
+                #     self.logger.error("Lider 2.0.0 (ROOT.war) indirilirken hata oluştu")
+            else:
+                result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv2_web_url))
+                if result_code == 0:
+                    self.logger.info("Lider 2.0.0 (ROOT.war) başarıyla indirildi.")
+                else:
+                    self.logger.error("Lider 2.0.0 (ROOT.war) indirilirken hata oluştu")
+                # result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv3_web_url))
+                # if result_code == 0:
+                #     self.logger.info("Lider 3.0.0 (ROOT.war) başarıyla indirildi.")
+                # else:
+                #     self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")                        
             result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat/webapps/files")
             if result_code == 0:
                 self.logger.info("files dizini oluşturuldu")
