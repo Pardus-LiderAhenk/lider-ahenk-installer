@@ -250,12 +250,13 @@ class SettingsPage(QWidget):
         self.repoLayout.addWidget(self.repo_key, 1, 1)
 
         ## Select Liderahenk version layout
-        self.selectLiderVersionLabel = QLabel("Lider Versiyonu Seçiniz:")
-        self.lider_version_cmb = QComboBox(self)
+        #self.selectLiderVersionLabel = QLabel("Lider Versiyonu Seçiniz:")
+        #self.lider_version_cmb = QComboBox(self)
         #self.lider_version_cmb.addItem("2.0")
-        self.lider_version_cmb.addItem("3.0")
-        self.repoLayout.addWidget(self.selectLiderVersionLabel, 3, 0)
-        self.repoLayout.addWidget(self.lider_version_cmb, 3, 1)
+        #self.lider_version_cmb.addItem("3.0")
+        #self.repoLayout.addWidget(self.selectLiderVersionLabel, 3, 0)
+        #self.repoLayout.addWidget(self.lider_version_cmb, 3, 1)
+        lider_version_cmb = "3.0"
         self.repoGroup.setLayout(self.repoLayout)
 
         self.statusLabel = QLabel("Lider kurulum durumu")
@@ -551,7 +552,7 @@ class SettingsPage(QWidget):
             'repo_addr': repo_addr,
 
             # select liderahenk version
-            'lider_version': self.lider_version_cmb.currentText()
+            'lider_version': "3.0"
         }
 
         if self.databaseCheckBox.isChecked() or self.ldapCheckBox.isChecked() or self.ejabberdCheckBox.isChecked() or self.liderCheckBox.isChecked():
