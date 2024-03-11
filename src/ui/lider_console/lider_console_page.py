@@ -102,13 +102,13 @@ class LiderConsolePage(QWidget):
     def main_repo(self):
 
         if self.repoMainBox.isChecked() is True:
-            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
+            self.repo_addr.setText("deb [trusted=yes] http://repo.liderahenk.org/liderahenk stable main")
             self.repoTestBox.setChecked(False)
 
     def test_repo(self):
 
         if self.repoTestBox.isChecked() is True:
-            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk-test testing main")
+            self.repo_addr.setText("deb [trusted=yes] http://repo.liderahenk.org/liderahenk-test testing main")
             self.repoMainBox.setChecked(False)
 
     def install_lider_console(self):

@@ -233,7 +233,7 @@ class SettingsPage(QWidget):
         self.repoTestBox = QCheckBox("Test Paket Deposu")
         self.repoMainBox.setChecked(True)
         self.repoLabel = QLabel("Depo Adresi:")
-        self.repo_addr = QLineEdit("deb [arch=amd64] https://repo.liderahenk.org/liderahenk stable main")
+        self.repo_addr = QLineEdit("deb [trusted=yes] https://repo.liderahenk.org/liderahenk stable main")
         self.repoKeyLdabel = QLabel("Depo Key Dosyası:")
         self.repo_key = QLineEdit("https://repo.liderahenk.org/liderahenk-archive-keyring.asc")
         self.repoMainBox.stateChanged.connect(self.main_repo)
@@ -429,9 +429,9 @@ class SettingsPage(QWidget):
                         self.repoMainBox.setChecked(True)
                         self.repo_addr.setText(data["repo_addr"])
                     else:
-                        self.repo_addr.setText("deb [arch=amd64] https://repo.liderahenk.org/liderahenk stable main")
+                        self.repo_addr.setText("deb [trusted=yes] https://repo.liderahenk.org/liderahenk stable main")
             else:
-                self.repo_addr.setText("deb [arch=amd64] https://repo.liderahenk.org/liderahenk stable main")
+                self.repo_addr.setText("deb [trusted=yes] https://repo.liderahenk.org/liderahenk stable main")
 
     def test_repo(self):
         if self.repoTestBox.isChecked() is True:
@@ -445,9 +445,9 @@ class SettingsPage(QWidget):
                         self.repoTestBox.setChecked(True)
                         self.repo_addr.setText(data["repo_addr"])
                     else:
-                        self.repo_addr.setText("deb [arch=amd64] https://repo.liderahenk.org/liderahenk-test testing main")
+                        self.repo_addr.setText("deb [trusted=yes] https://repo.liderahenk.org/liderahenk-test testing main")
             else:
-                self.repo_addr.setText("deb [arch=amd64] https://repo.liderahenk.org/liderahenk-test testing main")
+                self.repo_addr.setText("deb [trusted=yes] https://repo.liderahenk.org/liderahenk-test testing main")
 
     def get_params(self):
         lider_install = False
