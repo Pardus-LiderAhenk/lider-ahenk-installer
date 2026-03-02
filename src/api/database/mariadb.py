@@ -203,7 +203,11 @@ class MariaDbInstaller(object):
         "sudoRoleType": "LDAP",
         "machineEventStatus": False,
         "machineEventDay": 0,
-        "clientSize": 1
+        "clientSize": 1,
+        "agentStatusCronJob": "0 * * * * ?",
+        "taskCronJob": "0 */20 * * * ?",
+        "isTwoFactorEnabled": False,
+        "otpExpiryDuration": None
     }
         try:
             # date = datetime.datetime.strptime('my date', "%b %d %Y %H:%M")
