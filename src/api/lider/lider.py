@@ -5,6 +5,7 @@
 import os
 import string
 import random
+import shlex
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 from api.util.util import Util
@@ -21,10 +22,12 @@ class LiderInstaller(object):
         self.application_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../conf/lider.properties')
         self.application_properties_out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/lider.properties')
 
-        self.liderv2_web_url = "https://liderahenk.org/downloads/v2.0/ROOT.war"
-        self.liderv3_web_url = "https://liderahenk.org/downloads/v3.0/ROOT.war"
+        #self.liderv2_web_url = "https://liderahenk.org.tr/downloads/v2.0/ROOT.war"
+        self.liderv3_web_url = "https://liderahenk.org.tr/downloads/v3.5/ROOT.war"
 
-        self.tomcat_tar_file = "https://liderahenk.org/downloads/apache-tomcat-9.0.36.tar.gz"
+        self.tomcat_version = "10.1.55"
+        self.tomcat_tar_name = "apache-tomcat-{0}.tar.gz".format(self.tomcat_version)
+        self.tomcat_tar_file = "https://liderahenk.org.tr/downloads/v3.5/apache-tomcat-10.1.55.tar.gz"
         self.dist_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist')
         self.liderv2_app_properties_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../dist/liderv2/src/main/resources/lider.properties')
 
@@ -34,16 +37,12 @@ class LiderInstaller(object):
         if self.ssh_status == "Successfully Authenticated":
             cfg_data = self.config_manager.read()
             self.configure_app_properties(data)
-            result_code = self.ssh_api.run_command(cfg_data["cmd_soft_properties"])
-            if result_code == 0:
-                self.logger.info("software-properties-common paketi kuruldu")
-            else:
-                self.logger.error("software-properties-common paketi kurulamadı, result_code: " + str(result_code))
+          
             #result_code = self.ssh_api.run_command(
             #   cfg_data["cmd_liderahenk_repo_key"].format(data["repo_key"], repo_key))
             #if result_code == 0:
             self.logger.info("Lider Ahenk repo key dosyası indirildi")
-            result_code = self.ssh_api.run_command(cfg_data["cmd_liderahenk_repo_add"].format(data["repo_addr"]))
+            result_code = self.ssh_api.run_command(self.get_repo_add_command(data["repo_addr"]))
             if result_code == 0:
                 self.logger.info("Lider Ahenk repo adresi eklendi")
             else:
@@ -54,29 +53,37 @@ class LiderInstaller(object):
             else:
                 self.logger.error("Paket listesi güncellenemdi, result_code: " + str(result_code))
 
-            result_code = self.ssh_api.run_command("sudo apt-get install openjdk-8-jdk-headless -y")
+            result_code = self.ssh_api.run_command("sudo apt install openjdk-21-jdk-headless -y")
             if result_code == 0:
-                self.logger.info("openjdk-8 paketi başarıyla kuruldu")
+               self.logger.info("openjdk-21 paketi başarıyla kuruldu")
             else:
-                self.logger.error("openjdk-8 paketi kurulamadı")
+               self.logger.error("openjdk-21 paketi kurulamadı")
             result_code = self.ssh_api.run_command("sudo groupadd tomcat")
             if result_code == 0:
                 self.logger.info("tomcat grubu oluşturuldu")
             result_code = self.ssh_api.run_command("sudo useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat")
             if result_code == 0:
                 self.logger.info("tomcat kullanıcısı oluşturuldu ve ev dizini ayarlandı.")
-            result_code = self.ssh_api.run_command("wget {0}".format(self.tomcat_tar_file))
+            result_code = self.ssh_api.run_command("sudo apt-get install -y curl")
             if result_code == 0:
-                self.logger.info("tomcat başarıyla indirildi.")
+                self.logger.info("curl paketi başarıyla kuruldu")
             else:
+                self.logger.error("curl paketi kurulamadı, result_code: " + str(result_code))
+                return
+            if not self.download_tomcat_tar_file():
                 self.logger.error("tomcat indirilirken hata oluştu")
+                return
             result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat")
             self.logger.info("tomcat dizini oluşturuldu")
-            result_code = self.ssh_api.run_command("sudo tar xf apache-tomcat-*tar.gz -C /opt/tomcat --strip-components=1")
+            result_code = self.ssh_api.run_command(
+                "sudo tar xf /tmp/{0} -C /opt/tomcat --strip-components=1".format(self.tomcat_tar_name)
+            )
             result_code = self.ssh_api.run_command("sudo rm -rf /opt/tomcat/webapps/")
+            result_code = self.ssh_api.run_command("sudo mkdir -p /opt/tomcat/webapps /opt/tomcat/webapps/files")
             result_code = self.ssh_api.run_command("sudo chgrp -R tomcat /opt/tomcat")
             result_code = self.ssh_api.run_command("sudo chmod -R g+r /opt/tomcat/conf")
             result_code = self.ssh_api.run_command("sudo chmod g+x /opt/tomcat/conf")
+            result_code = self.ssh_api.run_command("sudo chmod -R 755 /opt/tomcat/webapps")
             result_code = self.ssh_api.run_command(
                 "sudo chown -R tomcat /opt/tomcat/webapps/ /opt/tomcat/work/ /opt/tomcat/temp/ /opt/tomcat/logs/")
             self.ssh_api.scp_file(self.tomcat_service_path, '/tmp/')
@@ -91,18 +98,18 @@ class LiderInstaller(object):
         
             # Install lider v2.0.0 or v3.0.0
             if data["lider_version"] == '3.0':
-                result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv3_web_url))
+                result_code = self.ssh_api.run_command("sudo wget -O /opt/tomcat/webapps/ROOT.war {0}".format(self.liderv3_web_url))
                 if result_code == 0:
                     self.logger.info("Lider 3.0.0 (ROOT.war) başarıyla indirildi.")
                 else:
-                    self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")                        
+                    self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")
                 # result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv2_web_url))
                 # if result_code == 0:
                 #     self.logger.info("Lider 2.0.0 (ROOT.war) başarıyla indirildi.")
                 # else:
                 #     self.logger.error("Lider 2.0.0 (ROOT.war) indirilirken hata oluştu")
             else:
-                result_code = self.ssh_api.run_command("sudo wget {0} -P /opt/tomcat/webapps/".format(self.liderv2_web_url))
+                result_code = self.download_root_war_file(self.liderv2_web_url)
                 if result_code == 0:
                     self.logger.info("Lider 2.0.0 (ROOT.war) başarıyla indirildi.")
                 else:
@@ -111,8 +118,9 @@ class LiderInstaller(object):
                 # if result_code == 0:
                 #     self.logger.info("Lider 3.0.0 (ROOT.war) başarıyla indirildi.")
                 # else:
-                #     self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")                        
-            result_code = self.ssh_api.run_command("sudo mkdir /opt/tomcat/webapps/files")
+                #     self.logger.error("Lider 3.0.0 (ROOT.war) indirilirken hata oluştu")
+
+            result_code = self.ssh_api.run_command("sudo mkdir -p /opt/tomcat/webapps/files")
             if result_code == 0:
                 self.logger.info("files dizini oluşturuldu")
             else:
@@ -132,6 +140,7 @@ class LiderInstaller(object):
             self.ssh_api.run_command("sudo apt-get install -y sshpass rsync")
             self.logger.info("lider kurulumu tamamlandı")
             self.ssh_api.run_command("sudo rm -rf /tmp/lider.properties")
+            self.ssh_api.run_command("sudo rm -f /tmp/{0}".format(self.tomcat_tar_name))
             # else:
             #     self.logger.error("Lider Ahenk repo key dosyası indirilemedi. Lider sunucu kurulmayacak. result_code: " + str(result_code))
         else:
@@ -152,8 +161,8 @@ class LiderInstaller(object):
         db_server = data["db_server_addr"]
         # if data['ip'] == db_server:
         #     db_server = "127.0.0.1"
-        char_set = string.ascii_uppercase + string.digits + "!#$%&()*+,.:;@" + string.ascii_lowercase
-        jwt_secret = ''.join(random.sample(char_set * 6, 32))
+        char_set = string.ascii_uppercase + string.digits + string.ascii_lowercase
+        jwt_secret = ''.join(random.sample(char_set * 6, 128))
         property_data = {
             "##DATABASEADDRESS##": db_server,
             "##DATABASENAME##": data['db_name'],
@@ -171,4 +180,28 @@ class LiderInstaller(object):
         self.f_db.close()
         self.f_db_out.close()
         self.logger.info("application properties dosyası oluşturuldu")
+
+    def get_repo_add_command(self, repo_addr):
+        # add-apt-repository yerine sources.list.d altina repo satiri yazar.
+        repo_line = str(repo_addr).strip().strip("'").strip('"')
+        return "echo {0} | sudo tee /etc/apt/sources.list.d/liderahenk.list > /dev/null".format(
+            shlex.quote(repo_line)
+        )
+
+    def download_tomcat_tar_file(self):
+        cmd = "curl -fL --retry 3 --connect-timeout 30 -o /tmp/{0} {1}".format(
+            self.tomcat_tar_name,
+            shlex.quote(self.tomcat_tar_file)
+        )
+        result_code = self.ssh_api.run_command(cmd)
+        if result_code == 0:
+            self.logger.info("tomcat başarıyla indirildi: {0}".format(self.tomcat_tar_file))
+            return True
+        return False
+
+    def download_root_war_file(self, web_url):
+        cmd = "sudo curl -fL --retry 3 --connect-timeout 30 -o /opt/tomcat/webapps/ROOT.war {0}".format(
+            shlex.quote(web_url)
+        )
+        return self.ssh_api.run_command(cmd)
 

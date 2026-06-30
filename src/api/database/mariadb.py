@@ -204,10 +204,24 @@ class MariaDbInstaller(object):
         "machineEventStatus": False,
         "machineEventDay": 0,
         "clientSize": 1,
-        "agentStatusCronJob": "0 * * * * ?",
-        "taskCronJob": "0 */20 * * * ?",
+        "adAllowSelfSignedCert": False,
+        "adUseSSL": False,
+        "adUseTLS": False,
+        "ahenkRepoAddress": "null",
+        "ahenkRepoKeyAddress": "null",
+        "allowDynamicDNSUpdate": True,
+        "allowVNCConnectionWithoutPermission": True,
+        "clientSslPath": "null",
+        "enableDelete4Directory": "null",
+        "fileServerUrl": "null",
         "isTwoFactorEnabled": False,
-        "otpExpiryDuration": None
+        "mailPort": 587,
+        "mailTlsEnabled": False,
+        "otpExpiryDuration": 400000,
+        "pardusRepoAddress": "",
+        "pardusRepoComponent": "",
+        "agentStatusCronJob": "0 * * * * ?",
+        "taskCronJob": "0 */20 * * * ?"
     }
         try:
             # date = datetime.datetime.strptime('my date', "%b %d %Y %H:%M")

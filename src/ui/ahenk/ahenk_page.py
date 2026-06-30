@@ -57,10 +57,10 @@ class AhenkPage(QWidget):
         self.repoMainBox.setChecked(True)
 
         self.repoLabel = QLabel("Depo Adresi:")
-        self.repo_addr = QLineEdit("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
+        self.repo_addr = QLineEdit("deb [arch=amd64] http://repo.liderahenk.org.tr/liderahenk stable main")
 
         self.repoKeyLdabel = QLabel("Depo Key Dosyası:")
-        self.repo_key = QLineEdit("http://repo.liderahenk.org/liderahenk-archive-keyring.asc")
+        self.repo_key = QLineEdit("http://repo.liderahenk.org.tr/liderahenk-archive-keyring.asc")
 
         self.repoMainBox.stateChanged.connect(self.main_repo)
         self.repoTestBox.stateChanged.connect(self.test_repo)
@@ -134,12 +134,12 @@ class AhenkPage(QWidget):
     def main_repo(self):
 
         if self.repoMainBox.isChecked() is True:
-            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk stable main")
+            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org.tr/liderahenk stable main")
             self.repoTestBox.setChecked(False)
 
     def test_repo(self):
         if self.repoTestBox.isChecked() is True:
-            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org/liderahenk-test testing main")
+            self.repo_addr.setText("deb [arch=amd64] http://repo.liderahenk.org.tr/liderahenk-test testing main")
             self.repoMainBox.setChecked(False)
 
     def add_ahenk(self):

@@ -87,7 +87,7 @@ class ConfigDialog(QDialog):
         self.close()
 
     def about_lider_installer(self):
-        self.msg_box.about("Liderahenk Merkezi Yönetim Sistemi Kurulum Uygulaması\nDaha fazla bilgi için...\nwww.liderahenk.org\nVersiyon: 2.2")
+        self.msg_box.about("Liderahenk Merkezi Yönetim Sistemi Kurulum Uygulaması\nDaha fazla bilgi için...\nwww.liderahenk.org.tr\nVersiyon: 2.2")
 
     def changePage(self, current, previous):
         if not current:

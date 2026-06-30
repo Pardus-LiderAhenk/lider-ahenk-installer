@@ -4,6 +4,7 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import os
+import shlex
 from api.config.config_manager import ConfigManager
 from api.logger.installer_logger import Logger
 import time
@@ -66,16 +67,12 @@ class EjabberInstaller(object):
 
         #run commands of ejabberd
         if self.ssh_status == "Successfully Authenticated":
-            result_code = self.ssh_api.run_command(cfg_data["cmd_soft_properties"])
-            if result_code == 0:
-                self.logger.info("software-properties-common paketi kuruldu")
-            else:
-                self.logger.error("software-properties-common paketi kurulamadı, result_code: "+str(result_code))
+            
             #result_code = self.ssh_api.run_command(cfg_data["cmd_liderahenk_repo_key"].format(data["repo_key"], repo_key))
             # if result_code == 0:
             self.logger.info("Lider Ahenk repo key dosyası indirildi")
 
-            result_code = self.ssh_api.run_command(cfg_data["cmd_liderahenk_repo_add"].format(data["repo_addr"]))
+            result_code = self.ssh_api.run_command(self.get_repo_add_command(data["repo_addr"]))
             if result_code == 0:
                 self.logger.info("Lider Ahenk repo adresi eklendi")
             else:
@@ -170,3 +167,10 @@ class EjabberInstaller(object):
         base_dn = ''.join(str(x) for x in dn_list)
         base_dn = base_dn.strip(',')
         return base_dn
+
+    def get_repo_add_command(self, repo_addr):
+        # add-apt-repository yerine sources.list.d altina repo satiri yazar.
+        repo_line = str(repo_addr).strip().strip("'").strip('"')
+        return "echo {0} | sudo tee /etc/apt/sources.list.d/liderahenk.list > /dev/null".format(
+            shlex.quote(repo_line)
+        )
