@@ -230,8 +230,8 @@ class AhenkPage(QWidget):
                         'host': self.host.text(),
                         'repo_key': repo_key,
                         'repo_addr': repo_addr,
-                        'ldap_user': "test_ldap_user",
-                        'ldap_user_pwd': "secret"
+                        'ldap_user': "",
+                        'ldap_user_pwd': ""
                     }
 
                     f = open(self.ahenk_list_file, "a+")

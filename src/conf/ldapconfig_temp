@@ -30,8 +30,6 @@ POLICYGROUPDN="ou=Policies,$GROUPDN"
 DEFAULTPOLICYDN="cn=Default Password Policy,$POLICYGROUPDN"
 
 LIDER_SERVER_ADDR="#LIDER_SERVER_ADDR"
-SIMPLELDAPUSER='#SIMPLELDAPUSER'
-SIMPLELDAPUSERPWD='#TESTLDAPUSERPWD'
 DBPATH=/var/ldaps/$CNAME
 
 systemctl restart slapd.service
@@ -195,32 +193,12 @@ liderPrivilege: [TASK:$BASEDN:ALL]
 liderPrivilege: ROLE_ADMIN
 liderPrivilege: ROLE_USER
 
-dn: uid=$SIMPLELDAPUSER,$USERDN
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: pardusAccount
-objectClass: pardusLider
-objectClass: person
-objectClass: posixAccount
-objectClass: shadowAccount
-objectClass: top
-cn: $SIMPLELDAPUSER
-sn: $SIMPLELDAPUSER
-uid: $SIMPLELDAPUSER
-uidNumber: 5000
-gidNumber: 5000
-homeDirectory: /home/$SIMPLELDAPUSER
-userPassword: $SIMPLELDAPUSERPWD
-loginShell: /bin/bash
-description: example ldap user
-
 dn: $ADMINGROUPDN
 objectClass: groupOfNames
 objectClass: top
 objectClass: pardusLider
 member: $ADMINDN
 member: cn=$LIDERCONSOLEUSER,$USERDN
-member: uid=$SIMPLELDAPUSER,$USERDN
 cn: adminGroups
 liderPrivilege: ROLE_DOMAIN_ADMIN
 description: User group authorized to write on LDAP
@@ -229,7 +207,7 @@ dn: $DOMAINADMINGROUPDN
 objectClass: groupOfNames
 objectClass: top
 objectClass: pardusLider
-member: uid=$SIMPLELDAPUSER,$USERDN
+member: cn=$LIDERCONSOLEUSER,$USERDN
 cn: domainAdminGroup
 liderPrivilege: ROLE_DOMAIN_ADMIN
 description: Domain admin group for register client
@@ -240,14 +218,6 @@ objectClass: top
 objectClass: pardusLider
 ou: Role
 description: group of roles
-
-dn: cn=rol-1,$ROLEGROUPDN
-objectClass: sudoRole
-objectClass: top
-cn: rol-1
-sudoUser: $SIMPLELDAPUSER
-sudoHost: ALL
-sudoCommand: ALL
 
 dn: $POLICYGROUPDN
 objectClass: organizationalUnit

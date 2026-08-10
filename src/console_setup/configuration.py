@@ -196,9 +196,7 @@ class Configuration():
             'ldap_status': self.ldap_status,
             'repo_addr': server_data["repo_addr"],
             'repo_key': server_data["repo_key"],
-            'lider_server_addr': lider_server_addr,
-            'simple_ldap_user': "test_ldap_user",
-            'simple_ldap_user_pwd': "secret"
+            'lider_server_addr': lider_server_addr
 
             # yeni ldap kur ya da varolan ldapı konfigüre et 'new' ya da 'update' parametreleri alıyor
         }

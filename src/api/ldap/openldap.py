@@ -29,7 +29,6 @@ class OpenLdapInstaller(object):
         # hashing password with argon2
         ph = PasswordHasher()
         ladmin_hash_password = ph.hash(data["ladmin_pwd"])
-        test_ldap_user_hash_password = ph.hash("secret")
         admin_pwd_hash = ph.hash(data["l_admin_pwd"])
         config_pwd_hash = ph.hash(data["l_config_pwd"])
 
@@ -52,8 +51,6 @@ class OpenLdapInstaller(object):
             "#ADUSER_PWD": data["ad_user_pwd"],
             "#AD_USER_NAME": data["ad_username"],
             "#AD_PORT": data["ad_port"],
-            "#SIMPLELDAPUSER": "test_ldap_user",
-            "#TESTLDAPUSERPWD": "{ARGON2}" + str(test_ldap_user_hash_password),
             "#NEWCONFIGPWD": "{ARGON2}" + str(config_pwd_hash),
             "#NEWADMINPWD": "{ARGON2}" + str(admin_pwd_hash)
         }
