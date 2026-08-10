@@ -65,14 +65,6 @@ objectClass: top
 objectClass: pardusLider
 ou: Roles
 description: group of roles
-
-dn: cn=rol-1,$ROLEGROUPDN
-objectClass: sudoRole
-objectClass: top
-cn: rol-1
-sudoUser: test_ldap_user
-sudoHost: ALL
-sudoCommand: ALL
 EOL
 
 systemctl restart slapd.service
