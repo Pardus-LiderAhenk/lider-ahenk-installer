@@ -5,7 +5,7 @@
 import os
 import json
 import subprocess
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox)
 
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox
@@ -59,7 +59,7 @@ class LiderConsolePage(QWidget):
         self.passwordLabel = QLabel("Kullanıcı Parolası:")
         self.password = QLineEdit()
         self.password.setPlaceholderText("****")
-        self.password.setEchoMode(QLineEdit.Password)
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
         self.addButton = QPushButton("Ekle")
         #self.checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
         self.saveButton = QPushButton("Ayarları Kaydet")

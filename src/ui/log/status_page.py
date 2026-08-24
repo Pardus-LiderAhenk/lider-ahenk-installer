@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QWidget)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QWidget)
 
 class StatusPage(QWidget):
     def __init__(self, parent=None):

@@ -3,7 +3,7 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import os
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QVBoxLayout, QWidget, QTextEdit, QPushButton)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QVBoxLayout, QWidget, QTextEdit, QPushButton)
 from ui.message_box.message_box import MessageBox
 
 class WatchLog(QWidget):

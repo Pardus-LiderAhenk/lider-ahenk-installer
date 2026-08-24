@@ -5,7 +5,7 @@
 import json
 import os
 
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QComboBox, QCheckBox)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QComboBox, QCheckBox)
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox
 from ui.lider.lider_page import LiderPage
@@ -36,7 +36,7 @@ class SettingsPage(QWidget):
         self.db_server_username.setPlaceholderText("Kullanıcı Adı")
         self.db_server_username_pwd = QLineEdit()
         self.db_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
-        self.db_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.db_server_username_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.db_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
 
         self.databaseGroup = QGroupBox()
@@ -57,7 +57,7 @@ class SettingsPage(QWidget):
         self.ldap_server_username.setPlaceholderText("Kullanıcı Adı")
         self.ldap_server_username_pwd = QLineEdit()
         self.ldap_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
-        self.ldap_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.ldap_server_username_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ldap_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
 
         self.ldapGroup = QGroupBox()
@@ -77,7 +77,7 @@ class SettingsPage(QWidget):
         self.ejabberd_server_username.setPlaceholderText("Kullanıcı Adı")
         self.ejabberd_server_username_pwd = QLineEdit()
         self.ejabberd_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
-        self.ejabberd_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.ejabberd_server_username_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ejabberd_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
 
         self.ejabberdGroup = QGroupBox()
@@ -97,7 +97,7 @@ class SettingsPage(QWidget):
         self.lider_server_username.setPlaceholderText("Kullanıcı Adı")
         self.lider_server_username_pwd = QLineEdit()
         self.lider_server_username_pwd.setPlaceholderText("Kullanıcı Parolası")
-        self.lider_server_username_pwd.setEchoMode(QLineEdit.Password)
+        self.lider_server_username_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.lider_checkControlButton = QPushButton("Bağlantıyı Kontrol Et")
 
         self.liderGroup = QGroupBox()
@@ -143,21 +143,21 @@ class SettingsPage(QWidget):
         self.ldapAdminPwdLabel = QLabel("Sistem Admin Parolası")
         self.ldap_admin_pwd = QLineEdit()
         self.ldap_admin_pwd.setPlaceholderText("****")
-        self.ldap_admin_pwd.setEchoMode(QLineEdit.Password)
+        self.ldap_admin_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ldapBaseDnLabel = QLabel("LDAP Base DN:")
         self.ldap_base_dn = QLineEdit()
         self.ldap_base_dn.setPlaceholderText("liderahenk.org")
         self.ldapConfigPwdLabel = QLabel("LDAP Config Kullanıcı Parolası")
         self.l_config_pwd = QLineEdit()
         self.l_config_pwd.setPlaceholderText("****")
-        self.l_config_pwd.setEchoMode(QLineEdit.Password)
+        self.l_config_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ladminLabel = QLabel("Lider Arayüz Kullanıcı Adı")
         self.ladmin_user = QLineEdit()
         self.ladmin_user.setPlaceholderText("lider_console")
         self.ladminPwdLabel = QLabel("Lider Arayüz Kullanıcı Parolası")
         self.ladmin_pwd = QLineEdit()
         self.ladmin_pwd.setPlaceholderText("****")
-        self.ladmin_pwd.setEchoMode(QLineEdit.Password)
+        self.ladmin_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ladminMailLabel = QLabel("Lider Arayüz Kullanıcı Mail Adresi")
         self.ladmin_mail_addr = QLineEdit()
         self.ladmin_mail_addr.setPlaceholderText("lider_console@liderahenk.org")
@@ -179,7 +179,7 @@ class SettingsPage(QWidget):
         self.ad_user_pwd_label = QLabel("AD Kullanıcı Parolası:")
         self.ad_user_pwd = QLineEdit()
         self.ad_user_pwd.setPlaceholderText("****")
-        self.ad_user_pwd.setEchoMode(QLineEdit.Password)
+        self.ad_user_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ad_user_dn_label = QLabel("AD Kullanıcı DN Bilgisi:")
         self.ad_user_dn = QLineEdit()
         self.ad_user_dn.setPlaceholderText("cn=Administrator,cn=Users,dc=ad,dc=liderahenk,dc=org")

@@ -4,7 +4,7 @@
 
 import os
 import json
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox)
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox
 from ui.log.status_page import StatusPage
@@ -34,7 +34,7 @@ class EjabberdPage(QWidget):
         self.e_username.setPlaceholderText("admin")
         self.ejabberdAdminPwdLabel = QLabel("XMPP Admin Kullanıcı Parolası:")
         self.e_user_pwd = QLineEdit()
-        self.e_user_pwd.setEchoMode(QLineEdit.Password)
+        self.e_user_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.e_user_pwd.setPlaceholderText("****")
         self.ejabberdLiderUserLabel = QLabel("XMPP Lider Kullanıcı Adı:")
         self.lider_username = QLineEdit()
@@ -42,7 +42,7 @@ class EjabberdPage(QWidget):
         self.ejabberdLiderPwdLAbel = QLabel("XMPP Lider Kullanıcı Parolası:")
         self.lider_user_pwd = QLineEdit()
         self.lider_user_pwd.setPlaceholderText("****")
-        self.lider_user_pwd.setEchoMode(QLineEdit.Password)
+        self.lider_user_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ldapServerLabel = QLabel("LDAP Sunucu Adresi:")
         self.ldap_server = QLineEdit()
         self.ldap_server.setPlaceholderText("192.168.*.*")
@@ -52,7 +52,7 @@ class EjabberdPage(QWidget):
         self.ldapAdminPwdLabel = QLabel("Ldap Admin Parolası:")
         self.ldap_admin_pwd = QLineEdit()
         self.ldap_admin_pwd.setPlaceholderText("****")
-        self.ldap_admin_pwd.setEchoMode(QLineEdit.Password)
+        self.ldap_admin_pwd.setEchoMode(QLineEdit.EchoMode.Password)
 
         # Install Status Layout
         statusGroup = QGroupBox()

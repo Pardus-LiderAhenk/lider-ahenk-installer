@@ -6,8 +6,8 @@ import os
 import subprocess
 import time
 
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTableWidget,
+from PyQt6 import QtGui
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTableWidget,
                              QHeaderView, QTableWidgetItem, QCheckBox)
 from install_manager import InstallManager
 from ui.log.status_page import StatusPage
@@ -36,7 +36,7 @@ class AhenkPage(QWidget):
         self.passwordLabel = QLabel("Kullanıcı Parolası:")
         self.password = QLineEdit()
         self.password.setPlaceholderText("****")
-        self.password.setEchoMode(QLineEdit.Password)
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
         self.addButton = QPushButton("Ekle")
 
         ## Connect Layout

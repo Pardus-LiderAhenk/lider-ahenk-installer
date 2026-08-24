@@ -3,11 +3,10 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import os
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QWidget, QPushButton, QVBoxLayout)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QWidget, QPushButton, QVBoxLayout)
 from install_manager import InstallManager
 from api.util.util import Util
 from ui.message_box.message_box import MessageBox
-import ui.conf.configdialog_rc
 
 
 class HomePage(QWidget):
@@ -27,7 +26,7 @@ class HomePage(QWidget):
         self.db_username.setPlaceholderText("root")
         self.dbPwdLabel = QLabel("Veritabanı Kullanıcı Parolası:")
         self.db_password = QLineEdit()
-        self.db_password.setEchoMode(QLineEdit.Password)
+        self.db_password.setEchoMode(QLineEdit.EchoMode.Password)
         self.db_password.setPlaceholderText("****")
         self.startUpdateButton = QPushButton("Kuruluma Başla")
 

@@ -7,11 +7,10 @@ import signal
 import sys
 
 import psutil
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (QApplication, QDialog, QHBoxLayout, QListView, QListWidget, QListWidgetItem, QPushButton,
+from PyQt6.QtCore import QSize, Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import (QApplication, QDialog, QHBoxLayout, QListView, QListWidget, QListWidgetItem, QPushButton,
                              QStackedWidget, QVBoxLayout)
-import ui.conf.configdialog_rc
 from ui.conf.home_page import HomePage
 from ui.settings.settings_page import SettingsPage
 from ui.ejabberd.ejabberd_page import EjabberdPage
@@ -32,9 +31,9 @@ class ConfigDialog(QDialog):
         self.lider_page = LiderPage()
 
         self.contentsWidget = QListWidget()
-        self.contentsWidget.setViewMode(QListView.IconMode)
+        self.contentsWidget.setViewMode(QListView.ViewMode.IconMode)
         self.contentsWidget.setIconSize(QSize(64, 64))
-        self.contentsWidget.setMovement(QListView.Static)
+        self.contentsWidget.setMovement(QListView.Movement.Static)
         self.contentsWidget.setMaximumWidth(128)
         self.contentsWidget.setMinimumWidth(128)
         self.contentsWidget.setMinimumHeight(700)
@@ -148,4 +147,4 @@ class ConfigDialog(QDialog):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     dialog = ConfigDialog()
-    sys.exit(dialog.exec_())
+    sys.exit(dialog.exec())

@@ -6,7 +6,7 @@ import os
 import json
 import subprocess
 
-from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox)
+from PyQt6.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QCheckBox)
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox
 from ui.log.status_page import StatusPage
@@ -37,21 +37,21 @@ class OpenLdapPage(QWidget):
         self.ldapAdminPwdLabel = QLabel("Sistem Admin Parolası:")
         self.ldap_admin_pwd = QLineEdit()
         self.ldap_admin_pwd.setPlaceholderText("****")
-        self.ldap_admin_pwd.setEchoMode(QLineEdit.Password)
+        self.ldap_admin_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ldapBaseDnLabel = QLabel("LDAP Base DN:")
         self.ldap_base_dn = QLineEdit()
         self.ldap_base_dn.setPlaceholderText("liderahenk.org")
         self.ldapConfigPwdLabel = QLabel("LDAP Config Kullanıcı Parolası:")
         self.l_config_pwd = QLineEdit()
         self.l_config_pwd.setPlaceholderText("****")
-        self.l_config_pwd.setEchoMode(QLineEdit.Password)
+        self.l_config_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ladminLabel = QLabel("Lider Arayüz Kullanıcı Adı:")
         self.ladmin_user = QLineEdit()
         self.ladmin_user.setPlaceholderText("lider_console")
         self.ladminPwdLabel = QLabel("Lider Arayüz Kullanıcı Parolası:")
         self.ladmin_pwd = QLineEdit()
         self.ladmin_pwd.setPlaceholderText("****")
-        self.ladmin_pwd.setEchoMode(QLineEdit.Password)
+        self.ladmin_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.startUpdateButton = QPushButton("Kuruluma Başla")
         # Active Directory Parameters
         self.adSelectionBox = QCheckBox("Active Directory Bilgilerini Düzenle")
@@ -70,7 +70,7 @@ class OpenLdapPage(QWidget):
         self.ad_user_pwd_label = QLabel("AD Kullanıcı Parolası:")
         self.ad_user_pwd = QLineEdit()
         self.ad_user_pwd.setPlaceholderText("****")
-        self.ad_user_pwd.setEchoMode(QLineEdit.Password)
+        self.ad_user_pwd.setEchoMode(QLineEdit.EchoMode.Password)
         self.ad_port_label = QLabel("AD Port:")
         self.ad_port = QLineEdit()
         self.ad_port.setPlaceholderText("389")

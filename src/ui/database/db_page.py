@@ -4,7 +4,7 @@
 
 import os
 import json
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTableWidget)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QTableWidget)
 
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox
@@ -32,7 +32,7 @@ class DatabasePage(QWidget):
         self.db_username.setPlaceholderText("root")
         self.dbPwdLabel = QLabel("Veritabanı Kullanıcı Parolası:")
         self.db_password = QLineEdit()
-        self.db_password.setEchoMode(QLineEdit.Password)
+        self.db_password.setEchoMode(QLineEdit.EchoMode.Password)
         self.db_password.setPlaceholderText("****")
         self.startUpdateButton = QPushButton("Kuruluma Başla")
 

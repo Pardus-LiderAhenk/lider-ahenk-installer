@@ -7,7 +7,7 @@ import json
 import subprocess
 import time
 
-from PyQt5.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QWidget, QVBoxLayout, QCheckBox)
+from PyQt6.QtWidgets import (QGridLayout, QGroupBox, QLabel, QLineEdit, QPushButton, QWidget, QVBoxLayout, QCheckBox)
 from api.util.util import Util
 from install_manager import InstallManager
 from ui.message_box.message_box import MessageBox

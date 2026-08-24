@@ -3,8 +3,8 @@
 # Author: Tuncay ÇOLAK <tuncay.colak@tubitak.gov.tr>
 
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
-from PyQt5.QtCore import QStringListModel
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
+from PyQt6.QtCore import QStringListModel
 
 try:
     _fromUtf8 = QStringListModel.fromUtf8
@@ -23,12 +23,12 @@ class MessageBox(QWidget):
     def information(self, message):
         msgBox = QMessageBox()
         msgBox.setMinimumSize(self.width, self.height)
-        msgBox.setIcon(msgBox.Information)
+        msgBox.setIcon(msgBox.Icon.Information)
         msgBox.setWindowTitle(self.title)
         msgBox.setInformativeText(_fromUtf8(str(message)))
         # msgBox.setDefaultButton(QMessageBox.Ok)
-        msgBox.addButton('Tamam', QMessageBox.NoRole)
-        msgBox.exec_()
+        msgBox.addButton('Tamam', QMessageBox.ButtonRole.NoRole)
+        msgBox.exec()
         # self.msgBox.setDefaultButton(QMessageBox.No)
 
     def about(self, message):
@@ -41,18 +41,18 @@ class MessageBox(QWidget):
         msgBox.setWindowTitle("UYARI")
         msgBox.setInformativeText(_fromUtf8(str(message)))
         # msgBox.setDefaultButton(QMessageBox.Ok)
-        msgBox.addButton('Tamam', QMessageBox.NoRole)
-        msgBox.exec_()
+        msgBox.addButton('Tamam', QMessageBox.ButtonRole.NoRole)
+        msgBox.exec()
 
     def install_confirm(self, message):
         msgBox = QMessageBox()
         msgBox.setMinimumSize(self.width, self.height)
-        msgBox.setIcon(msgBox.Information)
+        msgBox.setIcon(msgBox.Icon.Information)
         msgBox.setWindowTitle(self.title)
         msgBox.setInformativeText(_fromUtf8(str(message)))
-        yes_install_button = msgBox.addButton('Evet', QMessageBox.YesRole)
-        no_install_button = msgBox.addButton('Hayır', QMessageBox.NoRole)
-        msgBox.exec_()
+        yes_install_button = msgBox.addButton('Evet', QMessageBox.ButtonRole.YesRole)
+        no_install_button = msgBox.addButton('Hayır', QMessageBox.ButtonRole.NoRole)
+        msgBox.exec()
 
         if msgBox.clickedButton() == yes_install_button:
             return True
